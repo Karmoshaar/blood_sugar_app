@@ -1,0 +1,27 @@
+import 'package:flutter/material.dart';
+import 'splash_screen/splash_screen_1.dart';
+import 'splash_screen/splash_screen.dart';
+import 'AccountSetaup/account_setup.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+void main() {
+  runApp(
+    ProviderScope(
+      child: MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/',
+      routes: {
+        '/': (context) => SplashScreen1(),
+        '/splashMain': (context) => SplashMain(),
+          '/AccountSetup':(context) => AccountSetup(),
+      },
+    );
+  }
+}
