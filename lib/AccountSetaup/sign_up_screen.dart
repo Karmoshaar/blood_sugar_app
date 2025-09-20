@@ -56,11 +56,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 labelText: "Password",
                 prefixIcon: Icon(Icons.lock_outline),
                 suffixIcon: IconButton(
-                  icon:Icon(
-                  _obsureText ? Icons.visibility : Icons.visibility_off),
-                  onPressed: (){
+                  icon: Icon(
+                    _obsureText ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
                     setState(() {
-                      _obsureText=!_obsureText;
+                      _obsureText = !_obsureText;
                     });
                   },
                 ),
