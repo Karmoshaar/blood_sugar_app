@@ -10,39 +10,28 @@ class HeightSetup extends StatefulWidget {
 }
 
 class _HeightSetupState extends State<HeightSetup> {
-  int _cm = 170; // الطول بالسم
-  bool _isCm = true; // true = cm, false = ft+inch
+  int _cm = 170;
+  bool _isCm = true;
+
+  // للفيديو: feet و inches
+  int _feet = 5;
+  int _inches = 7;
 
   static const double _cmToInchFactor = 0.393701;
 
   String get _displayText {
     if (_isCm) return '$_cm cm';
+    return "${_feet}’${_inches}\"";
+  }
+
+  void _updateFeetInches() {
     int totalInches = (_cm * _cmToInchFactor).round();
-    int feet = totalInches ~/ 12;
-    int inches = totalInches % 12;
-    return "${feet}’${inches}\"";
+    _feet = totalInches ~/ 12;
+    _inches = totalInches % 12;
   }
 
-  int get _pickerValue => _isCm ? _cm : (_cm * _cmToInchFactor).round();
-
-  int get _minValue => _isCm ? 100 : (100 * _cmToInchFactor).round();
-
-  int get _maxValue => _isCm ? 220 : (220 * _cmToInchFactor).round();
-
-  void _onValueChanged(int value) {
-    setState(() {
-      if (_isCm) {
-        _cm = value;
-      } else {
-        _cm = (value / _cmToInchFactor).round();
-      }
-    });
-  }
-
-  void _toggleUnit(bool toCm) {
-    setState(() {
-      _isCm = toCm;
-    });
+  void _updateCmFromFeetInches() {
+    _cm = ((_feet * 12 + _inches) / _cmToInchFactor).round();
   }
 
   Widget _unitButton(String label, bool active, VoidCallback onTap) {
@@ -59,12 +48,12 @@ class _HeightSetupState extends State<HeightSetup> {
           ),
           boxShadow: active
               ? [
-                  BoxShadow(
-                    color: Colors.red.shade200,
-                    offset: const Offset(0, 4),
-                    blurRadius: 8,
-                  ),
-                ]
+            BoxShadow(
+              color: Colors.red.shade200,
+              offset: const Offset(0, 4),
+              blurRadius: 8,
+            ),
+          ]
               : [],
         ),
         child: Text(
@@ -124,36 +113,100 @@ class _HeightSetupState extends State<HeightSetup> {
             ),
             const SizedBox(height: 20),
 
-            // وحدة الطول
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _unitButton('cm', _isCm, () => _toggleUnit(true)),
+                _unitButton('cm', _isCm, () {
+                  setState(() {
+                    _isCm = true;
+                  });
+                }),
                 const SizedBox(width: 12),
-                _unitButton('ft', !_isCm, () => _toggleUnit(false)),
+                _unitButton('ft', !_isCm, () {
+                  setState(() {
+                    _isCm = false;
+                    _updateFeetInches(); // تحديث القيمة عند التبديل
+                  });
+                }),
               ],
             ),
 
             const SizedBox(height: 20),
 
             // NumberPicker
-            SizedBox(
-              height: 250,
-              child: NumberPicker(
-                value: _pickerValue,
-                minValue: _minValue,
-                maxValue: _maxValue,
-                step: 1,
-                itemHeight: 50,
-                selectedTextStyle: const TextStyle(
-                  color: Color(0xFFFB4452),
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
+            if (_isCm)
+              SizedBox(
+                height: 250,
+                child: NumberPicker(
+                  value: _cm,
+                  minValue: 100,
+                  maxValue: 220,
+                  step: 1,
+                  itemHeight: 50,
+                  selectedTextStyle: const TextStyle(
+                    color: Color(0xFFFB4452),
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  textStyle:
+                  TextStyle(color: Colors.grey.shade400, fontSize: 18),
+                  onChanged: (v) => setState(() {
+                    _cm = v;
+                  }),
                 ),
-                textStyle: TextStyle(color: Colors.grey.shade400, fontSize: 18),
-                onChanged: (v) => _onValueChanged(v),
+              )
+            else
+              SizedBox(
+                height: 250,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Feet picker
+                    NumberPicker(
+                      value: _feet,
+                      minValue: 3,
+                      maxValue: 7,
+                      step: 1,
+                      itemHeight: 50,
+                      selectedTextStyle: const TextStyle(
+                        color: Color(0xFFFB4452),
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      textStyle:
+                      TextStyle(color: Colors.grey.shade400, fontSize: 18),
+                      onChanged: (v) => setState(() {
+                        _feet = v;
+                        _updateCmFromFeetInches();
+                      }),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text("’", style: TextStyle(fontSize: 28)),
+                    const SizedBox(width: 8),
+                    // Inches picker
+                    NumberPicker(
+                      value: _inches,
+                      minValue: 0,
+                      maxValue: 11,
+                      step: 1,
+                      itemHeight: 50,
+                      selectedTextStyle: const TextStyle(
+                        color: Color(0xFFFB4452),
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      textStyle:
+                      TextStyle(color: Colors.grey.shade400, fontSize: 18),
+                      onChanged: (v) => setState(() {
+                        _inches = v;
+                        _updateCmFromFeetInches();
+                      }),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text("\"", style: TextStyle(fontSize: 28)),
+                  ],
+                ),
               ),
-            ),
 
             const SizedBox(height: 20),
 
@@ -161,7 +214,6 @@ class _HeightSetupState extends State<HeightSetup> {
             Stack(
               alignment: Alignment.center,
               children: [
-                // الخط الرمادي فوق النص
                 Positioned(
                   top: 0,
                   child: Container(
