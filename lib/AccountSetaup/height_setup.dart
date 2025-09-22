@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'name_setup.dart';
-
+import 'remind_setup.dart';
 class HeightSetup extends StatefulWidget {
   const HeightSetup({super.key});
 
@@ -242,7 +242,7 @@ class _HeightSetupState extends State<HeightSetup> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const NameSetup()),
+                  MaterialPageRoute(builder: (_) => const remindSetup()),
                 );
               },
               style: ElevatedButton.styleFrom(

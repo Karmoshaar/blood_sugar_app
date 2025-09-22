@@ -35,7 +35,7 @@ class _DateSetupState extends State<DateSetup> {
                 child: LinearProgressIndicator(
                   value: 0.5,
                   color: const Color.fromARGB(255, 251, 68, 82),
-                  backgroundColor: Colors.grey,
+                  backgroundColor: Colors.grey.shade300,
                   minHeight: 12,
                   borderRadius: BorderRadius.circular(10),
                 ),

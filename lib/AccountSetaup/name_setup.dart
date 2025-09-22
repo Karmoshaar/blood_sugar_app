@@ -31,7 +31,7 @@ class _NameSetupState extends State<NameSetup> {
                 child: LinearProgressIndicator(
                   value: 0.16,
                   color: Color.fromARGB(255, 251, 68, 82),
-                  backgroundColor: Colors.grey,
+                  backgroundColor: Colors.grey.shade300,
                   minHeight: 12,
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -61,7 +61,7 @@ class _NameSetupState extends State<NameSetup> {
               ),
             ),
           ),
-          SizedBox(height: 400),
+          SizedBox(height: 410),
           ElevatedButton(
             onPressed: (
                 ) {
