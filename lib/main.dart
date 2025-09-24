@@ -3,6 +3,7 @@ import 'splash_screen/splash_screen_1.dart';
 import 'splash_screen/splash_screen.dart';
 import 'AccountSetaup/account_setup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'HealthData/sugar_stats.dart';
 void main() {
   runApp(
     ProviderScope(
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => SplashScreen1(),
         '/splashMain': (context) => SplashMain(),
           '/AccountSetup':(context) => AccountSetup(),
+        '/SugarStats': (context) => SugarStats(),
       },
     );
   }
