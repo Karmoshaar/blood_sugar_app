@@ -2,7 +2,7 @@ import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'name_setup.dart';
-
+import 'package:blood_sugar_app_1/HealthData/sugar_stats.dart';
 class remindSetup extends StatefulWidget {
   const remindSetup({super.key});
 
@@ -91,7 +91,7 @@ class _remindSetupState extends State<remindSetup> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const NameSetup()),
+                  MaterialPageRoute(builder: (_) => const SugarStats()),
                 );
               },
               style: ElevatedButton.styleFrom(
