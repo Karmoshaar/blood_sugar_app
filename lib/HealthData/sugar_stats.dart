@@ -92,7 +92,7 @@ class _SugarStatsState extends State<SugarStats> {
 
               /// صورة الفقاعات (تطلع فوق الكارد)
               Positioned(
-                top: -5,
+                top: -2,
                 right: -5,
                 child: Image.asset(
                   "asset/image/bubble.png", // حط صورتك هون
