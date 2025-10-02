@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
 
-/// دالة صغيرة لعرض الإحصائيات
 Widget _buildStat(String value, String label) {
   return Column(
     children: [
       Text(
         value,
-        style: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
       const SizedBox(height: 4),
-      Text(
-        label,
-        style: TextStyle(color: Colors.grey[600]),
-      ),
+      Text(label, style: TextStyle(color: Colors.grey[600])),
     ],
   );
 }
+
+int _selected = 1; // 1 = Statistics (Bar), 2 = History (Line)
 
 class SugarStats extends StatefulWidget {
   const SugarStats({super.key});
@@ -42,12 +37,9 @@ class _SugarStatsState extends State<SugarStats> {
       ),
       body: Column(
         children: [
-          /// Stack عشان نقدر نضيف الصورة فوق الكارد
           Stack(
             clipBehavior: Clip.none,
             children: [
-
-              /// الكارد الأساسي
               Card(
                 margin: const EdgeInsets.all(16),
                 elevation: 9,
@@ -69,14 +61,9 @@ class _SugarStatsState extends State<SugarStats> {
                       const SizedBox(height: 4),
                       Text(
                         "Lifetime summary",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
                       const SizedBox(height: 20),
-
-                      /// الإحصائيات
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -89,18 +76,97 @@ class _SugarStatsState extends State<SugarStats> {
                   ),
                 ),
               ),
-
-              /// صورة الفقاعات (تطلع فوق الكارد)
               Positioned(
                 top: -2,
                 right: -5,
                 child: Image.asset(
-                  "asset/image/bubble.png", // حط صورتك هون
+                  "asset/image/bubble.png",
                   width: 100,
                   height: 100,
                 ),
               ),
             ],
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // زر Statistics
+                _selected == 1
+                    ? ElevatedButton(
+                        onPressed: () => setState(() => _selected = 1),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color.fromARGB(255, 251, 68, 82),
+                          foregroundColor: Colors.white,
+                          minimumSize: Size(140, 40),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text("Statistics"),
+                      )
+                    : OutlinedButton(
+                        onPressed: () => setState(() => _selected = 1),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.black,
+                          side: BorderSide(color: Colors.grey.shade300),
+                          minimumSize: Size(140, 40),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text("Statistics"),
+                      ),
+
+                const SizedBox(width: 10),
+
+                // زر History
+                _selected == 2
+                    ? ElevatedButton(
+                        onPressed: () => setState(() => _selected = 2),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color.fromARGB(255, 251, 68, 82),
+                          foregroundColor: Colors.white,
+                          minimumSize: Size(140, 40),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text("History"),
+                      )
+                    : OutlinedButton(
+                        onPressed: () => setState(() => _selected = 2),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.black,
+                          minimumSize: Size(140, 40),
+                          side: BorderSide(color: Colors.grey.shade300),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text("History"),
+                      ),
+              ],
+            ),
           ),
         ],
       ),
