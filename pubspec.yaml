@@ -41,6 +41,7 @@ dependencies:
   dss_cupertino_date_picker: ^1.0.0
   numberpicker: ^2.1.2
   flutter_time_picker_spinner: ^2.0.0
+  fl_chart: ^0.68.0
 
 dev_dependencies:
   flutter_test:

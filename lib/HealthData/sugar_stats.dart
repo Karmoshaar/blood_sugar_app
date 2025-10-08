@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 Widget _buildStat(String value, String label) {
   return Column(
     children: [
@@ -95,77 +96,133 @@ class _SugarStatsState extends State<SugarStats> {
                 // زر Statistics
                 _selected == 1
                     ? ElevatedButton(
-                        onPressed: () => setState(() => _selected = 1),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(255, 251, 68, 82),
-                          foregroundColor: Colors.white,
-                          minimumSize: Size(140, 40),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: const Text("Statistics"),
-                      )
+                  onPressed: () => setState(() => _selected = 1),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromARGB(255, 251, 68, 82),
+                    foregroundColor: Colors.white,
+                    minimumSize: Size(170, 40),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text("Statistics"),
+                )
                     : OutlinedButton(
-                        onPressed: () => setState(() => _selected = 1),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          side: BorderSide(color: Colors.grey.shade300),
-                          minimumSize: Size(140, 40),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text("Statistics"),
-                      ),
+                  onPressed: () => setState(() => _selected = 1),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    side: BorderSide(color: Colors.grey.shade300),
+                    minimumSize: Size(170, 40),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text("Statistics"),
+                ),
 
                 const SizedBox(width: 10),
 
                 // زر History
                 _selected == 2
                     ? ElevatedButton(
-                        onPressed: () => setState(() => _selected = 2),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(255, 251, 68, 82),
-                          foregroundColor: Colors.white,
-                          minimumSize: Size(140, 40),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: const Text("History"),
-                      )
+                  onPressed: () => setState(() => _selected = 2),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromARGB(255, 251, 68, 82),
+                    foregroundColor: Colors.white,
+                    minimumSize: Size(170, 40),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text("History"),
+                )
                     : OutlinedButton(
-                        onPressed: () => setState(() => _selected = 2),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          minimumSize: Size(140, 40),
-                          side: BorderSide(color: Colors.grey.shade300),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text("History"),
-                      ),
+                  onPressed: () => setState(() => _selected = 2),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    minimumSize: Size(170, 40),
+                    side: BorderSide(color: Colors.grey.shade300),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text("History"),
+                ),
               ],
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [Row(mainAxisAlignment: MainAxisAlignment.
+                      spaceBetween,
+                      children: [
+                        const Text(
+                          "Blood sugar(mg/dL)",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 16),
+                        ),
+                        Row(children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(8),
+
+                            ),
+                            child: const Icon(
+                              Icons.bar_chart, color: Colors.grey,
+                              size: 20,),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 251, 68, 82),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.calendar_today, color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                            ],)
+                        ]
+
+
+                        )
+
+                      ],
+                    )
+                ),
+              ),
             ),
           ),
         ],
