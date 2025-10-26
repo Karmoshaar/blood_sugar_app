@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'dart:math' as math;
 
 Widget _buildStat(String value, String label) {
   return Column(
@@ -230,7 +232,36 @@ class _SugarStatsState extends State<SugarStats> {
                             onPressed: () {},
                             icon: const Icon(Icons.chevron_left),
                           ),
+                          const Text(
+                            "Dec 16 - Dec 22, 2024",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.chevron_right),
+                          ),
                         ],
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: LineChart(
+                          LineChartData(
+                            gridData: FlGridData(
+                              show: true,
+                              drawVerticalLine: false,
+                              horizontalInterval: 20,
+                              getDrawingHorizontalLine: (value) {
+                                return FlLine(
+                                  color: Colors.grey[200],
+                                  strokeWidth: 1,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
