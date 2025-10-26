@@ -39,9 +39,13 @@ class _SplashScreen4State extends State<SplashScreen4> {
               ),
             ),
 
-            SizedBox(height: 30),
+            Expanded(
+              flex: 1,
+              child: SizedBox(),
+            ),
 
             Expanded(
+              flex: 3,
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -53,27 +57,28 @@ class _SplashScreen4State extends State<SplashScreen4> {
                 ),
                 child: Column(
                   children: [
-                    SizedBox(height: 40),
+                    Spacer(flex: 2),
                     Text(
                       "Consult with Our Al Chat\n"
-                      "Doctor",
+                          "Doctor",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 60),
+                    Spacer(flex: 1),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
                         "Experience personalized health consultations\n"
-                        "with our Al Chat Doctor. Get health advice\n"
-                        "anytime, anywhere.",
+                            "with our Al Chat Doctor. Get health advice\n"
+                            "anytime, anywhere.",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 20, color: Colors.grey[700]),
                       ),
                     ),
+                    Spacer(flex: 2),
                   ],
                 ),
               ),

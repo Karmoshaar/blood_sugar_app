@@ -38,9 +38,13 @@ class _SplashScreen3State extends State<SplashScreen3> {
               ),
             ),
 
-            SizedBox(height: 30),
+            Expanded(
+              flex: 1,
+              child: SizedBox(),
+            ),
 
             Expanded(
+              flex: 3,
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -52,7 +56,7 @@ class _SplashScreen3State extends State<SplashScreen3> {
                 ),
                 child: Column(
                   children: [
-                    SizedBox(height: 40),
+                    Spacer(flex: 2),
                     Text(
                       "All-in-One Health Monitoring",
                       textAlign: TextAlign.center,
@@ -61,17 +65,18 @@ class _SplashScreen3State extends State<SplashScreen3> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 60),
+                    Spacer(flex: 1),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Text(
                         "Track blood pressure, sugar, weight & BMI.\n"
-                        "Gain control over your health with\n"
-                        "comprehensive tracking tools.",
+                            "Gain control over your health with\n"
+                            "comprehensive tracking tools.",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 20, color: Colors.grey[700]),
                       ),
                     ),
+                    Spacer(flex: 2),
                   ],
                 ),
               ),

@@ -21,7 +21,7 @@ class SplashScreen2 extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 30),
+           Spacer(),
 
             Expanded(
               child: Container(
@@ -29,7 +29,7 @@ class SplashScreen2 extends StatelessWidget {
                 color: Colors.white,
                 child: Column(
                   children: [
-                    SizedBox(height: 40),
+                   Spacer(),
                     Text(
                       "Pulsey! Your Personal Health Companion",
                       textAlign: TextAlign.center,
@@ -38,7 +38,7 @@ class SplashScreen2 extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 40),
+                   Spacer(),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
