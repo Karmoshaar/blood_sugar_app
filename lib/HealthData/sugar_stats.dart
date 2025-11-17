@@ -14,8 +14,11 @@ Widget _buildStat(String value, String label) {
     ],
   );
 }
+enum ChartType {
+  bar,
+  line,
+}
 
-int _selected = 1; // 1 = Statistics (Bar), 2 = History (Line)
 
 class SugarStats extends StatefulWidget {
   const SugarStats({super.key});
@@ -25,8 +28,12 @@ class SugarStats extends StatefulWidget {
 }
 
 class _SugarStatsState extends State<SugarStats> {
+  ChartType _selected = ChartType.bar;
+  final List<double> weeklyData = [110, 95, 130, 120, 150, 100, 90];
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -37,6 +44,7 @@ class _SugarStatsState extends State<SugarStats> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
         ),
       ),
+
       body: Column(
         children: [
           Stack(
@@ -78,6 +86,7 @@ class _SugarStatsState extends State<SugarStats> {
                   ),
                 ),
               ),
+
               Positioned(
                 top: -2,
                 right: -5,
@@ -95,9 +104,9 @@ class _SugarStatsState extends State<SugarStats> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // زر Statistics
-                _selected == 1
+                _selected == ChartType.bar
                     ? ElevatedButton(
-                        onPressed: () => setState(() => _selected = 1),
+                        onPressed: () => setState(() => _selected = ChartType.bar),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color.fromARGB(255, 251, 68, 82),
                           foregroundColor: Colors.white,
@@ -114,7 +123,7 @@ class _SugarStatsState extends State<SugarStats> {
                         child: const Text("Statistics"),
                       )
                     : OutlinedButton(
-                        onPressed: () => setState(() => _selected = 1),
+                        onPressed: () => setState(() => _selected = ChartType.bar),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.black,
                           side: BorderSide(color: Colors.grey.shade300),
@@ -133,9 +142,9 @@ class _SugarStatsState extends State<SugarStats> {
                 const SizedBox(width: 10),
 
                 // زر History
-                _selected == 2
+                _selected == ChartType.line
                     ? ElevatedButton(
-                        onPressed: () => setState(() => _selected = 2),
+                        onPressed: () => setState(() => _selected = ChartType.line),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color.fromARGB(255, 251, 68, 82),
                           foregroundColor: Colors.white,
@@ -152,7 +161,7 @@ class _SugarStatsState extends State<SugarStats> {
                         child: const Text("History"),
                       )
                     : OutlinedButton(
-                        onPressed: () => setState(() => _selected = 2),
+                        onPressed: () => setState(() => _selected = ChartType.line),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.black,
                           minimumSize: Size(170, 40),
@@ -247,28 +256,88 @@ class _SugarStatsState extends State<SugarStats> {
                       ),
                       const SizedBox(height: 16),
                       Expanded(
-                        child: LineChart(
-                          LineChartData(
-                            gridData: FlGridData(
-                              show: true,
-                              drawVerticalLine: false,
-                              horizontalInterval: 20,
-                              getDrawingHorizontalLine: (value) {
-                                return FlLine(
-                                  color: Colors.grey[200],
-                                  strokeWidth: 1,
-                                );
-                              },
+                        child: _selected == ChartType.bar
+                            ? BarChart(
+                          BarChartData(
+                            alignment: BarChartAlignment.spaceAround,
+                            maxY: 200,
+                            barTouchData: BarTouchData(enabled: true),
+                            titlesData: FlTitlesData(
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: true, reservedSize: 30),
+                              ),
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  getTitlesWidget: (value, meta) {
+                                    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+                                    return Text(days[value.toInt()]);
+                                  },
+                                ),
+                              ),
+                            ),
+                            gridData: FlGridData(show: true),
+                            barGroups: List.generate(
+                              weeklyData.length,
+                                  (i) => BarChartGroupData(
+                                x: i,
+                                barRods: [
+                                  BarChartRodData(
+                                    toY: weeklyData[i],
+                                    color: const Color.fromARGB(255, 251, 68, 82),
+                                    width: 20,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
+                        )
+
+                            : LineChart(
+                          LineChartData(
+                            gridData: FlGridData(show: true),
+                            titlesData: FlTitlesData(
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  getTitlesWidget: (value, meta) {
+                                    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+                                    if (value.toInt() >= 0 && value.toInt() < 7) {
+                                      return Text(days[value.toInt()]);
+                                    }
+                                    return const Text("");
+                                  },
+                                ),
+                              ),
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: true),
+                              ),
+                            ),
+                            lineBarsData: [
+                              LineChartBarData(
+                                spots: List.generate(
+                                  weeklyData.length,
+                                      (i) => FlSpot(i.toDouble(), weeklyData[i]),
+                                ),
+                                isCurved: true,
+                                color: const Color.fromARGB(255, 251, 68, 82),
+                                barWidth: 4,
+                                dotData: FlDotData(show: true),
+                              ),
+                            ],
+                          ),
+                        )
+
                       ),
+
                     ],
                   ),
                 ),
               ),
             ),
           ),
+
         ],
       ),
     );
