@@ -9,7 +9,13 @@ class NameSetup extends StatefulWidget {
 }
 
 class _NameSetupState extends State<NameSetup> {
-  bool agree = false;
+  final TextEditingController _nameController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +24,8 @@ class _NameSetupState extends State<NameSetup> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
         ),
         title: Padding(
           padding: const EdgeInsets.only(right: 16),
@@ -30,56 +34,69 @@ class _NameSetupState extends State<NameSetup> {
               Expanded(
                 child: LinearProgressIndicator(
                   value: 0.16,
-                  color: Color.fromARGB(255, 251, 68, 82),
+                  color: const Color.fromARGB(255, 251, 68, 82),
                   backgroundColor: Colors.grey.shade300,
                   minHeight: 12,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              SizedBox(width: 16),
-              Text('1/6'),
+              const SizedBox(width: 16),
+              const Text('1/6', style: TextStyle(color: Colors.black)),
             ],
           ),
         ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          SizedBox(height: 50),
-          Text(
-            'What is your name?',
-            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 250),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 70.0),
-            child: TextField(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          children: <Widget>[
+            const SizedBox(height: 40),
+            const Text(
+              'What is your name?',
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 60),
+            TextField(
+              controller: _nameController,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 labelText: 'Enter your name',
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
               ),
             ),
-          ),
-          SizedBox(height: 410),
-          ElevatedButton(
-            onPressed: (
-                ) {
-            Navigator.push (context,MaterialPageRoute(builder: (_) => GenderSetup()) );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromARGB(255, 251, 68, 82),
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 80),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(32),
+            const Spacer(),
+            ElevatedButton(
+              onPressed: () {
+                if (_nameController.text.isNotEmpty) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const GenderSetup()),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 251, 68, 82),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 80,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(32),
+                ),
+              ),
+              child: const Text(
+                "Continue",
+                style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
-            child: Text(
-              "continue",
-              style: TextStyle(color: Colors.white, fontSize: 18),
-            ),
-          ),
-        ],
+            const SizedBox(height: 30),
+          ],
+        ),
       ),
     );
   }

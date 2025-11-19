@@ -1,50 +1,55 @@
 import 'package:flutter/material.dart';
 
 class SplashScreen2 extends StatelessWidget {
+  const SplashScreen2({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 251, 68, 82),
+      backgroundColor: const Color.fromARGB(255, 251, 68, 82),
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              width: double.infinity,
-              height: 350,
-              color: Color.fromARGB(255, 251, 68, 82),
-              child: Center(
-                child: Image.asset(
-                  'asset/image/mobile2.png',
-                  width: 300,
-                  height: 400,
+            Expanded(
+              flex: 3,
+              child: Container(
+                width: double.infinity,
+                color: const Color.fromARGB(255, 251, 68, 82),
+                child: Center(
+                  child: Image.asset(
+                    'asset/image/mobile2.png',
+                    width: 300,
+                    height: 400,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ),
-
-           Spacer(),
-
             Expanded(
+              flex: 2,
               child: Container(
                 width: double.infinity,
                 color: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                   Spacer(),
-                    Text(
+                    const Text(
                       "Pulsey! Your Personal Health Companion",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 30,
+                        fontSize: 28,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                   Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        "Stay in tune with your heart's rhythm. Monitor your heart rate in real-time with precise measurements and insightful analysis.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 20, color: Colors.grey[700]),
+                    const SizedBox(height: 20),
+                    Text(
+                      "Stay in tune with your heart's rhythm. Monitor your heart rate in real-time with precise measurements and insightful analysis.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey[700],
+                        height: 1.5,
                       ),
                     ),
                   ],

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'name_setup.dart';
 import 'package:dss_cupertino_date_picker/dss_cupertino_date_picker.dart';
 import 'weight_setup.dart';
 
@@ -22,9 +21,7 @@ class _DateSetupState extends State<DateSetup> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back, color: Colors.black),
         ),
         title: Padding(
@@ -41,7 +38,7 @@ class _DateSetupState extends State<DateSetup> {
                 ),
               ),
               const SizedBox(width: 16),
-              const Text('3/6'),
+              const Text('3/6', style: TextStyle(color: Colors.black)),
             ],
           ),
         ),
@@ -53,10 +50,8 @@ class _DateSetupState extends State<DateSetup> {
             'When is your birthday?',
             style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 20),
-
-          SizedBox(
-            height: 550,
+          const SizedBox(height: 30),
+          Expanded(
             child: CupertinoDatePicker(
               itemExtent: 50,
               minDate: _minDate,
@@ -67,7 +62,10 @@ class _DateSetupState extends State<DateSetup> {
                 height: 50,
                 decoration: const BoxDecoration(
                   border: Border.symmetric(
-                    horizontal: BorderSide(color: Color.fromARGB(255, 251, 68, 82), width: 1),
+                    horizontal: BorderSide(
+                      color: Color.fromARGB(255, 251, 68, 82),
+                      width: 1,
+                    ),
                   ),
                 ),
               ),
@@ -76,18 +74,20 @@ class _DateSetupState extends State<DateSetup> {
                 fontWeight: FontWeight.w600,
                 fontSize: 24,
               ),
-              unselectedStyle: TextStyle(color:Colors.black, fontSize: 18),
-              disabledStyle: TextStyle(color: Color.fromARGB(255, 251, 68, 82), fontSize: 18),
+              unselectedStyle: const TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+              ),
+              disabledStyle: const TextStyle(
+                color: Color.fromARGB(255, 251, 68, 82),
+                fontSize: 18,
+              ),
               onSelectedItemChanged: (date) {
-                setState(() {
-                  _selectedDate = date;
-                });
+                setState(() => _selectedDate = date);
               },
             ),
           ),
-
-          const Spacer(),
-
+          const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
               Navigator.push(
@@ -97,13 +97,16 @@ class _DateSetupState extends State<DateSetup> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromARGB(255, 251, 68, 82),
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 80),
+              padding: const EdgeInsets.symmetric(
+                vertical: 16,
+                horizontal: 80,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(32),
               ),
             ),
             child: const Text(
-              "continue",
+              "Continue",
               style: TextStyle(color: Colors.white, fontSize: 18),
             ),
           ),

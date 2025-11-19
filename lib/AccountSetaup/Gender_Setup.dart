@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:flutter/material.dart';
-import 'name_setup.dart';
 import 'date_setup.dart';
 
 class GenderSetup extends StatefulWidget {
@@ -12,7 +10,6 @@ class GenderSetup extends StatefulWidget {
 }
 
 class _GenderSetupState extends State<GenderSetup> {
-  bool agree = false;
   String? selectedGender;
 
   @override
@@ -22,10 +19,8 @@ class _GenderSetupState extends State<GenderSetup> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
         ),
         title: Padding(
           padding: const EdgeInsets.only(right: 16),
@@ -34,94 +29,97 @@ class _GenderSetupState extends State<GenderSetup> {
               Expanded(
                 child: LinearProgressIndicator(
                   value: 0.32,
-                  color: Color.fromARGB(255, 251, 68, 82),
+                  color: const Color.fromARGB(255, 251, 68, 82),
                   backgroundColor: Colors.grey.shade300,
                   minHeight: 12,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              SizedBox(width: 16),
-              Text('2/6'),
+              const SizedBox(width: 16),
+              const Text('2/6', style: TextStyle(color: Colors.black)),
             ],
           ),
         ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          SizedBox(height: 50),
-          Text(
-            'What is your gender?',
-            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 250),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // أيقونة ذكر
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedGender = "male";
-                  });
-                },
-                child: CircleAvatar(
-                  radius: 60,
-                  backgroundColor: selectedGender == "male"
-                      ? Color.fromARGB(255, 251, 68, 82)
-                      : Colors.grey[300],
-                  child: FaIcon(
-                    FontAwesomeIcons.mars,
-                    color: Colors.white,
-                    size: 40,
-                  ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          children: <Widget>[
+            const SizedBox(height: 40),
+            const Text(
+              'What is your gender?',
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+            ),
+            const Spacer(flex: 2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildGenderOption(
+                  icon: FontAwesomeIcons.mars,
+                  isSelected: selectedGender == "male",
+                  onTap: () => setState(() => selectedGender = "male"),
+                ),
+                const SizedBox(width: 30),
+                _buildGenderOption(
+                  icon: FontAwesomeIcons.venus,
+                  isSelected: selectedGender == "female",
+                  onTap: () => setState(() => selectedGender = "female"),
+                ),
+              ],
+            ),
+            const Spacer(flex: 3),
+            ElevatedButton(
+              onPressed: selectedGender != null
+                  ? () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const DateSetup()),
+                );
+              }
+                  : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 251, 68, 82),
+                disabledBackgroundColor: Colors.grey.shade300,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 80,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(32),
                 ),
               ),
-              SizedBox(width: 30),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedGender = "female";
-                  });
-                },
-                child: CircleAvatar(
-                  radius: 60,
-                  backgroundColor: selectedGender == "female"
-                      ? Color.fromARGB(255, 251, 68, 82)
-                      : Colors.grey[300],
-                  child: FaIcon(
-                    FontAwesomeIcons.venus,
-                    color: Colors.white,
-                    size: 40,
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-
-          SizedBox(height: 350),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => DateSetup()),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromARGB(255, 251, 68, 82),
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 80),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(32),
+              child: const Text(
+                "Continue",
+                style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
-            child: Text(
-              "continue",
-              style: TextStyle(color: Colors.white, fontSize: 18),
-            ),
+            const SizedBox(height: 30),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGenderOption({
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        child: CircleAvatar(
+          radius: 60,
+          backgroundColor: isSelected
+              ? const Color.fromARGB(255, 251, 68, 82)
+              : Colors.grey[300],
+          child: FaIcon(
+            icon,
+            color: Colors.white,
+            size: 40,
           ),
-        ],
+        ),
       ),
     );
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'name_setup.dart';
 import 'height_setup.dart';
+
 class WeightSetup extends StatefulWidget {
   const WeightSetup({super.key});
 
@@ -10,17 +10,13 @@ class WeightSetup extends StatefulWidget {
 }
 
 class _WeightSetupState extends State<WeightSetup> {
-  // internal state stored in kilograms
   int _kg = 70;
   bool _isKg = true;
 
-  // helpers
   static const double _kgToLbFactor = 2.20462262;
 
   int get _displayValue => _isKg ? _kg : (_kg * _kgToLbFactor).round();
-
   int get _minValue => _isKg ? 30 : (30 * _kgToLbFactor).round();
-
   int get _maxValue => _isKg ? 200 : (200 * _kgToLbFactor).round();
 
   void _onValueChanged(int value) {
@@ -28,42 +24,9 @@ class _WeightSetupState extends State<WeightSetup> {
       if (_isKg) {
         _kg = value;
       } else {
-        // user changed value in LB -> convert back to kg and store
         _kg = (value / _kgToLbFactor).round();
       }
     });
-  }
-
-  void _toggleUnit(bool toKg) {
-    setState(() {
-      _isKg = toKg;
-      // _kg remains the single source of truth, the NumberPicker will display converted value
-    });
-  }
-
-  Widget _unitButton(String label, bool active, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
-        decoration: BoxDecoration(
-          color: active
-              ? const Color.fromARGB(255, 251, 68, 82)
-              : Colors.transparent,
-          border: Border.all(
-            color: active ? Colors.transparent : Colors.grey.shade300,
-          ),
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: active ? Colors.white : Colors.black87,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
   }
 
   @override
@@ -107,22 +70,16 @@ class _WeightSetupState extends State<WeightSetup> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 18),
-
-            // unit toggle
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _unitButton('kg', _isKg, () => _toggleUnit(true)),
+                _unitButton('kg', _isKg, () => setState(() => _isKg = true)),
                 const SizedBox(width: 12),
-                _unitButton('lb', !_isKg, () => _toggleUnit(false)),
+                _unitButton('lb', !_isKg, () => setState(() => _isKg = false)),
               ],
             ),
-
             const SizedBox(height: 18),
-
-            // picker with center overlay lines
-            SizedBox(
-              height: 400,
+            Expanded(
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -142,11 +99,9 @@ class _WeightSetupState extends State<WeightSetup> {
                         color: Colors.grey.shade600,
                         fontSize: 20,
                       ),
-                      onChanged: (v) => _onValueChanged(v),
+                      onChanged: _onValueChanged,
                     ),
                   ),
-
-                  // overlay two thin lines (top & bottom) to indicate selected row
                   IgnorePointer(
                     child: Center(
                       child: Container(
@@ -169,9 +124,7 @@ class _WeightSetupState extends State<WeightSetup> {
                 ],
               ),
             ),
-
-            const SizedBox(height: 250),
-
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -194,7 +147,34 @@ class _WeightSetupState extends State<WeightSetup> {
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
+            const SizedBox(height: 30),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _unitButton(String label, bool active, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+        decoration: BoxDecoration(
+          color: active
+              ? const Color.fromARGB(255, 251, 68, 82)
+              : Colors.transparent,
+          border: Border.all(
+            color: active ? Colors.transparent : Colors.grey.shade300,
+          ),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: active ? Colors.white : Colors.black87,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
