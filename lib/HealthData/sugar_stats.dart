@@ -14,11 +14,11 @@ Widget _buildStat(String value, String label) {
     ],
   );
 }
+
 enum ChartType {
   bar,
   line,
 }
-
 
 class SugarStats extends StatefulWidget {
   const SugarStats({super.key});
@@ -33,7 +33,6 @@ class _SugarStatsState extends State<SugarStats> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -44,7 +43,6 @@ class _SugarStatsState extends State<SugarStats> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
         ),
       ),
-
       body: Column(
         children: [
           Stack(
@@ -86,7 +84,6 @@ class _SugarStatsState extends State<SugarStats> {
                   ),
                 ),
               ),
-
               Positioned(
                 top: -2,
                 right: -5,
@@ -106,76 +103,62 @@ class _SugarStatsState extends State<SugarStats> {
                 // زر Statistics
                 _selected == ChartType.bar
                     ? ElevatedButton(
-                        onPressed: () => setState(() => _selected = ChartType.bar),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(255, 251, 68, 82),
-                          foregroundColor: Colors.white,
-                          minimumSize: Size(170, 40),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: const Text("Statistics"),
-                      )
+                  onPressed: () => setState(() => _selected = ChartType.bar),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 251, 68, 82),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(170, 40),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text("Statistics"),
+                )
                     : OutlinedButton(
-                        onPressed: () => setState(() => _selected = ChartType.bar),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          side: BorderSide(color: Colors.grey.shade300),
-                          minimumSize: Size(170, 40),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text("Statistics"),
-                      ),
-
+                  onPressed: () => setState(() => _selected = ChartType.bar),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    side: BorderSide(color: Colors.grey.shade300),
+                    minimumSize: const Size(170, 40),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text("Statistics"),
+                ),
                 const SizedBox(width: 10),
-
                 // زر History
                 _selected == ChartType.line
                     ? ElevatedButton(
-                        onPressed: () => setState(() => _selected = ChartType.line),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(255, 251, 68, 82),
-                          foregroundColor: Colors.white,
-                          minimumSize: Size(170, 40),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: const Text("History"),
-                      )
+                  onPressed: () => setState(() => _selected = ChartType.line),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 251, 68, 82),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(170, 40),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text("History"),
+                )
                     : OutlinedButton(
-                        onPressed: () => setState(() => _selected = ChartType.line),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          minimumSize: Size(170, 40),
-                          side: BorderSide(color: Colors.grey.shade300),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text("History"),
-                      ),
+                  onPressed: () => setState(() => _selected = ChartType.line),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    side: BorderSide(color: Colors.grey.shade300),
+                    minimumSize: const Size(170, 40),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text("History"),
+                ),
               ],
             ),
           ),
@@ -207,20 +190,25 @@ class _SugarStatsState extends State<SugarStats> {
                               Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: Colors.grey[200],
+                                  color: _selected == ChartType.line
+                                      ? Colors.grey[200]
+                                      : Colors.white,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: const Icon(
-                                  Icons.bar_chart,
-                                  color: Colors.grey,
-                                  size: 20,
+                                child: IconButton(
+                                  onPressed: () => setState(() => _selected = ChartType.line),
+                                  icon: const Icon(
+                                    Icons.bar_chart,
+                                    color: Colors.grey,
+                                    size: 20,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: Color.fromARGB(255, 251, 68, 82),
+                                  color: const Color.fromARGB(255, 251, 68, 82),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Icon(
@@ -293,7 +281,6 @@ class _SugarStatsState extends State<SugarStats> {
                             ),
                           ),
                         )
-
                             : LineChart(
                           LineChartData(
                             gridData: FlGridData(show: true),
@@ -327,17 +314,14 @@ class _SugarStatsState extends State<SugarStats> {
                               ),
                             ],
                           ),
-                        )
-
+                        ),
                       ),
-
                     ],
                   ),
                 ),
               ),
             ),
           ),
-
         ],
       ),
     );
