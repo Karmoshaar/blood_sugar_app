@@ -15,10 +15,7 @@ Widget _buildStat(String value, String label) {
   );
 }
 
-enum ChartType {
-  bar,
-  line,
-}
+enum ChartType { bar, line }
 
 class SugarStats extends StatefulWidget {
   const SugarStats({super.key});
@@ -104,62 +101,88 @@ class _SugarStatsState extends State<SugarStats> {
                 // زر Statistics
                 _selected == ChartType.bar
                     ? ElevatedButton(
-                  onPressed: () => setState(() => _selected = ChartType.bar),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 251, 68, 82),
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(170, 40),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: const Text("Statistics"),
-                )
+                        onPressed: () =>
+                            setState(() => _selected = ChartType.bar),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(
+                            255,
+                            251,
+                            68,
+                            82,
+                          ),
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(170, 40),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text("Statistics"),
+                      )
                     : OutlinedButton(
-                  onPressed: () => setState(() => _selected = ChartType.bar),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    side: BorderSide(color: Colors.grey.shade300),
-                    minimumSize: const Size(170, 40),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text("Statistics"),
-                ),
+                        onPressed: () =>
+                            setState(() => _selected = ChartType.bar),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.black,
+                          side: BorderSide(color: Colors.grey.shade300),
+                          minimumSize: const Size(170, 40),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text("Statistics"),
+                      ),
                 const SizedBox(width: 10),
                 // زر History
                 _selected == ChartType.line
                     ? ElevatedButton(
-                  onPressed: () => setState(() => _selected = ChartType.line),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 251, 68, 82),
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(170, 40),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: const Text("History"),
-                )
+                        onPressed: () =>
+                            setState(() => _selected = ChartType.line),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(
+                            255,
+                            251,
+                            68,
+                            82,
+                          ),
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(170, 40),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text("History"),
+                      )
                     : OutlinedButton(
-                  onPressed: () => setState(() => _selected = ChartType.line),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    side: BorderSide(color: Colors.grey.shade300),
-                    minimumSize: const Size(170, 40),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text("History"),
-                ),
+                        onPressed: () =>
+                            setState(() => _selected = ChartType.line),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.black,
+                          side: BorderSide(color: Colors.grey.shade300),
+                          minimumSize: const Size(170, 40),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text("History"),
+                      ),
               ],
             ),
           ),
@@ -191,13 +214,14 @@ class _SugarStatsState extends State<SugarStats> {
                               Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: _selected == ChartType.line
-                                      ? Colors.grey[200]
+                                  color: _selected == ChartType.bar
+                                      ? const Color(0xFFFB4452)
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: IconButton(
-                                  onPressed: () => setState(() => _selected = ChartType.line),
+                                  onPressed: () =>
+                                      setState(() => _selected = ChartType.bar),
                                   icon: const Icon(
                                     Icons.bar_chart,
                                     color: Colors.grey,
@@ -209,13 +233,20 @@ class _SugarStatsState extends State<SugarStats> {
                               Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: const Color.fromARGB(255, 251, 68, 82),
+                                  color: _selected == ChartType.line
+                                      ? const Color(0xFFFB4452)
+                                      : Colors.white,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: const Icon(
-                                  Icons.calendar_today,
-                                  color: Colors.white,
-                                  size: 20,
+                                child: IconButton(
+                                  onPressed: () => setState(
+                                    () => _selected = ChartType.line,
+                                  ),
+                                  icon: const Icon(
+                                    Icons.show_chart,
+                                    color: Colors.grey,
+                                    size: 20,
+                                  ),
                                 ),
                               ),
                             ],
@@ -247,76 +278,159 @@ class _SugarStatsState extends State<SugarStats> {
                       Expanded(
                         child: _selected == ChartType.bar
                             ? BarChart(
-                          BarChartData(
-                            alignment: BarChartAlignment.spaceAround,
-                            maxY: 200,
-                            barTouchData: BarTouchData(enabled: true),
-                            titlesData: FlTitlesData(
-                              leftTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: true, reservedSize: 30),
-                              ),
-                              bottomTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                  showTitles: true,
-                                  getTitlesWidget: (value, meta) {
-                                    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-                                    return Text(days[value.toInt()]);
-                                  },
-                                ),
-                              ),
-                            ),
-                            gridData: FlGridData(show: true),
-                            barGroups: List.generate(
-                              weeklyData.length,
-                                  (i) => BarChartGroupData(
-                                x: i,
-                                barRods: [
-                                  BarChartRodData(
-                                    toY: weeklyData[i],
-                                    color: const Color.fromARGB(255, 251, 68, 82),
-                                    width: 20,
-                                    borderRadius: BorderRadius.circular(8),
+                                BarChartData(
+                                  alignment: BarChartAlignment.spaceAround,
+                                  maxY: 200,
+
+                                  barTouchData: BarTouchData(enabled:false),
+                                  titlesData: FlTitlesData(
+                                    leftTitles: AxisTitles(
+                                      sideTitles: SideTitles(
+                                        showTitles: false,
+                                        reservedSize: 30,
+                                      ),
+                                    ),
+                                    bottomTitles: AxisTitles(
+                                      sideTitles: SideTitles(
+                                        showTitles: false,
+                                        getTitlesWidget: (value, meta) {
+                                          const days = [
+                                            "Mon",
+                                            "Tue",
+                                            "Wed",
+                                            "Thu",
+                                            "Fri",
+                                            "Sat",
+                                            "Sun",
+                                          ];
+                                          return Text(days[value.toInt()]);
+                                        },
+                                      ),
+                                    ),
                                   ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        )
+                                  borderData: FlBorderData(show: false),
+                                  gridData: FlGridData(show: false),
+                                  barGroups: List.generate(
+                                    weeklyData.length,
+                                    (i) => BarChartGroupData(
+                                      x: i,
+                                      barRods: [
+                                        BarChartRodData(
+                                          toY: weeklyData[i],
+
+                                          color: const Color.fromARGB(
+                                            255,
+                                            251,
+                                            68,
+                                            82,
+                                          ),
+                                          width: 20,
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Color(0xFFFF9AA2),
+                                              Color(0xFFFB4452),
+                                            ],
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
                             : LineChart(
-                          LineChartData(
-                            gridData: FlGridData(show: true),
-                            titlesData: FlTitlesData(
-                              bottomTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                  showTitles: true,
-                                  getTitlesWidget: (value, meta) {
-                                    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-                                    if (value.toInt() >= 0 && value.toInt() < 7) {
-                                      return Text(days[value.toInt()]);
-                                    }
-                                    return const Text("");
-                                  },
+                                LineChartData(
+                                  gridData: FlGridData(show: false),
+                                  borderData: FlBorderData(show: false),
+                                  titlesData: FlTitlesData(
+                                    bottomTitles: AxisTitles(
+                                      sideTitles: SideTitles(
+                                        showTitles: false,
+                                        getTitlesWidget: (value, meta) {
+                                          const days = [
+                                            "20",
+                                            "21",
+                                            "22",
+                                            "23",
+                                            "24",
+                                            "25",
+                                            "26",
+                                          ];
+                                          if (value.toInt() >= 0 &&
+                                              value.toInt() < 7) {
+                                            return Text(days[value.toInt()]);
+                                          }
+                                          return const Text("");
+                                        },
+                                      ),
+                                    ),
+                                    leftTitles: AxisTitles(
+                                      sideTitles: SideTitles(showTitles: false),
+                                    ),
+                                  ),
+
+                                  lineBarsData: [
+                                    LineChartBarData(
+                                      spots: List.generate(
+                                        weeklyData.length,
+                                        (i) =>
+                                            FlSpot(i.toDouble(), weeklyData[i]),
+                                      ),
+                                      isCurved: true,
+                                      color: const Color.fromARGB(
+                                        255,
+                                        251,
+                                        68,
+                                        82,
+                                      ),
+
+                                      barWidth: 4,
+                                      belowBarData: BarAreaData(
+                                        show: false,
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Color(0xFFFB4452).withOpacity(0.3),
+                                            Colors.transparent,
+                                          ],
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                        ),
+                                      ),
+                                      dotData: FlDotData(show: true,),
+                                    ),
+
+                                  ],
                                 ),
                               ),
-                              leftTitles: AxisTitles(
-                                sideTitles: SideTitles(showTitles: true),
-                              ),
-                            ),
-                            lineBarsData: [
-                              LineChartBarData(
-                                spots: List.generate(
-                                  weeklyData.length,
-                                      (i) => FlSpot(i.toDouble(), weeklyData[i]),
-                                ),
-                                isCurved: true,
-                                color: const Color.fromARGB(255, 251, 68, 82),
-                                barWidth: 4,
-                                dotData: FlDotData(show: true),
-                              ),
-                            ],
-                          ),
-                        ),
                       ),
+                      const SizedBox(height: 10),
+                      Center(
+                        child: ElevatedButton(onPressed: (){},  style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(
+                              255,
+                              251,
+                              68,
+                              82,
+                            ),
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(170, 40),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
+                            alignment: Alignment.bottomCenter
+                        ),
+                          child: const Text("add"),
+                        )     ,
+                      )
                     ],
                   ),
                 ),
