@@ -43,6 +43,7 @@ dependencies:
   flutter_time_picker_spinner: ^2.0.0
   fl_chart: ^0.68.0
   shared_preferences: ^2.5.3
+  dio: ^5.9.0
 
 dev_dependencies:
   flutter_test:
