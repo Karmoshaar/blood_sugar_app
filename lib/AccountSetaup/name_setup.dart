@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'Gender_Setup.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
 
-class NameSetup extends StatefulWidget {
+class NameSetup extends ConsumerStatefulWidget {
   const NameSetup({super.key});
 
   @override
-  _NameSetupState createState() => _NameSetupState();
+  ConsumerState<NameSetup> createState() => _NameSetupState();
 }
 
-class _NameSetupState extends State<NameSetup> {
+class _NameSetupState extends ConsumerState<NameSetup> {
   final TextEditingController _nameController = TextEditingController();
 
   @override
@@ -73,6 +75,14 @@ class _NameSetupState extends State<NameSetup> {
             ElevatedButton(
               onPressed: () {
                 if (_nameController.text.isNotEmpty) {
+                  // حفظ الاسم في Provider
+                  ref
+                      .read(userSetupProvider.notifier)
+                      .setName(_nameController.text);
+
+                  // طباعة للتأكد (اختياري - للتجربة)
+                  print('✅ تم حفظ الاسم: ${_nameController.text}');
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const GenderSetup()),

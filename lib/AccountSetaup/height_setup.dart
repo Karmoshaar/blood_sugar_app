@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'name_setup.dart';
 import 'remind_setup.dart';
-class HeightSetup extends StatefulWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
+class HeightSetup extends ConsumerStatefulWidget {
   const HeightSetup({super.key});
 
   @override
-  State<HeightSetup> createState() => _HeightSetupState();
+  ConsumerState<HeightSetup> createState() => _HeightSetupState();
 }
 
-class _HeightSetupState extends State<HeightSetup> {
+class _HeightSetupState extends ConsumerState<HeightSetup> {
   int _cm = 170;
   bool _isCm = true;
 
@@ -240,6 +242,8 @@ class _HeightSetupState extends State<HeightSetup> {
 
             ElevatedButton(
               onPressed: () {
+                ref.read(userSetupProvider.notifier).setHeight(_cm.toDouble());
+                print('تم طباعة الطول:$_cm cm');
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const remindSetup()),

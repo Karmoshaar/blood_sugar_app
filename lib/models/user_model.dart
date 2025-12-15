@@ -33,8 +33,8 @@ class UserModel {
       name: json["name"],
       gender: json["gender"],
       birthDate: DateTime.parse(json["birthDate"]),
-      weight: json["weight"],
-      height: json["height"],
+      weight: (json["weight"] as num).toDouble(),  // ← التعديل
+      height: (json["height"] as num).toDouble(),  // ← التعديل
       reminderTime: json["reminderTime"] != null
           ? DateTime.parse(json["reminderTime"])
           : null,

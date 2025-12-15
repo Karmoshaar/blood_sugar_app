@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'height_setup.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
 
-class WeightSetup extends StatefulWidget {
+class WeightSetup extends ConsumerStatefulWidget {
   const WeightSetup({super.key});
 
   @override
-  State<WeightSetup> createState() => _WeightSetupState();
+  ConsumerState<WeightSetup> createState() => _WeightSetupState();
 }
 
-class _WeightSetupState extends State<WeightSetup> {
+class _WeightSetupState extends ConsumerState<WeightSetup> {
   int _kg = 70;
   bool _isKg = true;
 
   static const double _kgToLbFactor = 2.20462262;
 
   int get _displayValue => _isKg ? _kg : (_kg * _kgToLbFactor).round();
+
   int get _minValue => _isKg ? 30 : (30 * _kgToLbFactor).round();
+
   int get _maxValue => _isKg ? 200 : (200 * _kgToLbFactor).round();
 
   void _onValueChanged(int value) {
@@ -127,6 +131,8 @@ class _WeightSetupState extends State<WeightSetup> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
+                ref.read(userSetupProvider.notifier).setWeight(_kg.toDouble());
+                print('تم حفظ الوزن:$_kg kg');
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const HeightSetup()),

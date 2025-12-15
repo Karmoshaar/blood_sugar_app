@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:dss_cupertino_date_picker/dss_cupertino_date_picker.dart';
 import 'weight_setup.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
 
-class DateSetup extends StatefulWidget {
+class DateSetup extends ConsumerStatefulWidget {
   const DateSetup({super.key});
 
   @override
-  State<DateSetup> createState() => _DateSetupState();
+  ConsumerState<DateSetup> createState() => _DateSetupState();
 }
 
-class _DateSetupState extends State<DateSetup> {
+class _DateSetupState extends ConsumerState<DateSetup> {
   DateTime _selectedDate = DateTime.now();
   final DateTime _minDate = DateTime(1900, 1, 1);
   final DateTime _maxDate = DateTime.now();
@@ -90,6 +92,8 @@ class _DateSetupState extends State<DateSetup> {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
+              ref.read(userSetupProvider.notifier).setBirthDate(_selectedDate);
+              print('تم حفظ التاريخ :$_selectedDate');
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const WeightSetup()),
@@ -97,10 +101,7 @@ class _DateSetupState extends State<DateSetup> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromARGB(255, 251, 68, 82),
-              padding: const EdgeInsets.symmetric(
-                vertical: 16,
-                horizontal: 80,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 80),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(32),
               ),

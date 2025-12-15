@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'date_setup.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
 
-class GenderSetup extends StatefulWidget {
+class GenderSetup extends ConsumerStatefulWidget {
   const GenderSetup({super.key});
 
   @override
-  State<GenderSetup> createState() => _GenderSetupState();
+  ConsumerState<GenderSetup> createState() => _GenderSetupState();
 }
 
-class _GenderSetupState extends State<GenderSetup> {
+class _GenderSetupState extends ConsumerState<GenderSetup> {
   String? selectedGender;
 
   @override
@@ -71,11 +73,17 @@ class _GenderSetupState extends State<GenderSetup> {
             ElevatedButton(
               onPressed: selectedGender != null
                   ? () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const DateSetup()),
-                );
-              }
+                      ref
+                          .read(userSetupProvider.notifier)
+                          .setGender(selectedGender!);
+
+                      print('✅ تم حفظ الجنس: $selectedGender');
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const DateSetup()),
+                      );
+                    }
                   : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 251, 68, 82),
@@ -114,11 +122,7 @@ class _GenderSetupState extends State<GenderSetup> {
           backgroundColor: isSelected
               ? const Color.fromARGB(255, 251, 68, 82)
               : Colors.grey[300],
-          child: FaIcon(
-            icon,
-            color: Colors.white,
-            size: 40,
-          ),
+          child: FaIcon(icon, color: Colors.white, size: 40),
         ),
       ),
     );

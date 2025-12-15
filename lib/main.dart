@@ -12,48 +12,48 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // اختبار Dio
-  await testDio();
+  // await testDio();
 
   // اختبار ApiService
-  await testApiService();
+  // await testApiService();
 
   runApp(
     ProviderScope(child: MyApp()),
   );
 }
 
-Future<void> testDio() async {
-  final container = ProviderContainer();
-  final dio = container.read(dioProvider);
-
-  try {
-    final response = await dio.get('/users');
-    print('✅ Success: ${response.data}');
-  } catch (e) {
-    print('❌ Error: $e');
-  }
-}
-
-Future<void> testApiService() async {
-  final container = ProviderContainer();
-  final apiService = container.read(apiServiceProvider);
-
-  final testUser = UserModel(
-    name: 'أحمد التجريبي',
-    gender: 'male',
-    birthDate: DateTime(1995, 5, 15),
-    weight: 70.0,
-    height: 175.0,
-  );
-
-  try {
-    print('🚀 جاري إرسال البيانات...');
-    final result = await apiService.createUser(testUser);
-    print('✅ نجح! البيانات المرجعة: ${result.toJson()}');
-  } catch (e) {
-    print('❌ فشل: $e');
-  }
-}
+// Future<void> testDio() async {
+//   final container = ProviderContainer();
+//   final dio = container.read(dioProvider);
+//
+//   try {
+//     final response = await dio.get('/users');
+//     print('✅ Success: ${response.data}');
+//   } catch (e) {
+//     print('❌ Error: $e');
+//   }
+// }
+//
+// Future<void> testApiService() async {
+//   final container = ProviderContainer();
+//   final apiService = container.read(apiServiceProvider);
+//
+//   final testUser = UserModel(
+//     name: 'أحمد التجريبي',
+//     gender: 'male',
+//     birthDate: DateTime(1995, 5, 15),
+//     weight: 70.0,
+//     height: 175.0,
+//   );
+//
+//   try {
+//     print('🚀 جاري إرسال البيانات...');
+//     final result = await apiService.createUser(testUser);
+//     print('✅ نجح! البيانات المرجعة: ${result.toJson()}');
+//   } catch (e) {
+//     print('❌ فشل: $e');
+//   }
+// }
 
 class MyApp extends StatelessWidget {
   @override

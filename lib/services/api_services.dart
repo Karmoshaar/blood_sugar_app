@@ -1,4 +1,4 @@
-import 'package:blood_sugar_app_1/core/netowrk/api_constants.dart';
+import 'package:blood_sugar_app_1/core/network/api_constants.dart';
 import 'package:dio/dio.dart';
 import 'package:blood_sugar_app_1/models/user_model.dart';
 import 'package:riverpod/riverpod.dart';
@@ -6,30 +6,36 @@ import 'package:blood_sugar_app_1/core/providers/dio_provider.dart';
 class ApiServices {
   final Dio _dio;
   ApiServices(this._dio);
-
   Future<UserModel> createUser(UserModel user) async {
     try {
       final data = user.toJson();
+
+      print('🌐 Base URL: ${_dio.options.baseUrl}');
+      print('🌐 Endpoint: ${ApiConstants.users}');
+      print('🌐 Full URL: ${_dio.options.baseUrl}${ApiConstants.users}');
+      print('📤 البيانات: $data');
+
       final response = await _dio.post(
         ApiConstants.users,
         data: data,
       );
-      if (response.statusCode == 200 || response.statusCode == 201)
-      {
-      return UserModel.fromJson(response.data);
+
+      print('✅ Status: ${response.statusCode}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return UserModel.fromJson(response.data);
+      } else {
+        throw Exception('فشل في إنشاء المستخدم');
       }
-      else
-        {throw Exception('فشل في انشاء المستخدم');
-        }
 
-    }on DioException catch (e) {
+    } on DioException catch (e) {
+      print('❌ DioException: ${e.type}');
+      print('❌ Response: ${e.response?.statusCode}');
       throw _handleDioError(e);
-    }
-    catch(e){
+    } catch (e) {
       throw Exception('خطأ غير متوقع: $e');
-
     }
-    }
+  }
   /// معالج الأخطاء الخاص بـ Dio
   Exception _handleDioError(DioException error) {
     switch (error.type) {

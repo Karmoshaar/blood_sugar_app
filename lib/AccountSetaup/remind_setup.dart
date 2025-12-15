@@ -3,14 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'name_setup.dart';
 import 'package:blood_sugar_app_1/HealthData/sugar_stats.dart';
-class remindSetup extends StatefulWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
+
+class remindSetup extends ConsumerStatefulWidget {
   const remindSetup({super.key});
 
   @override
-  State<remindSetup> createState() => _remindSetupState();
+  ConsumerState<remindSetup> createState() => _remindSetupState();
 }
 
-class _remindSetupState extends State<remindSetup> {
+class _remindSetupState extends ConsumerState<remindSetup> {
+  bool _isLoading = false;
+  DateTime _selectedTime = DateTime.now();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,7 +68,7 @@ class _remindSetupState extends State<remindSetup> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TimePickerSpinner(
-                  time: DateTime.now(),
+                  time: _selectedTime,
                   is24HourMode: false,
                   normalTextStyle: const TextStyle(
                     fontSize: 24,
@@ -77,6 +83,7 @@ class _remindSetupState extends State<remindSetup> {
                   itemHeight: 80,
                   isForce2Digits: true,
                   onTimeChange: (time) {
+                    _selectedTime = time;
                     // Handle time change if needed
                   },
                 ),
@@ -88,12 +95,64 @@ class _remindSetupState extends State<remindSetup> {
             const Spacer(),
 
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const SugarStats()),
-                );
-              },
+              onPressed: _isLoading
+                  ? null
+                  : () async {
+                      // بداية التحميل
+                      setState(() {
+                        _isLoading = true;
+                      });
+
+                      try {
+                        // حفظ وقت التذكير
+                        ref
+                            .read(userSetupProvider.notifier)
+                            .setReminderTime(_selectedTime);
+
+                        print('🚀 جاري إرسال البيانات...');
+                        print('⏰ وقت التذكير: $_selectedTime');
+
+                        // إرسال البيانات
+                        await ref
+                            .read(userSetupProvider.notifier)
+                            .completeSetup();
+
+                        print('✅ تم إرسال البيانات بنجاح!');
+
+                        // إيقاف التحميل
+                        setState(() {
+                          _isLoading = false;
+                        });
+
+                        // الانتقال للصفحة التالية
+                        if (mounted) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const SugarStats(),
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        // إيقاف التحميل
+                        setState(() {
+                          _isLoading = false;
+                        });
+
+                        // إظهار رسالة الخطأ
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('فشل في إرسال البيانات: $e'),
+                              backgroundColor: Colors.red,
+                              duration: const Duration(seconds: 3),
+                            ),
+                          );
+                        }
+
+                        print('❌ خطأ في إرسال البيانات: $e');
+                      }
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFFB4452),
                 padding: const EdgeInsets.symmetric(
@@ -106,10 +165,19 @@ class _remindSetupState extends State<remindSetup> {
                 elevation: 5,
                 shadowColor: Colors.red.shade200,
               ),
-              child: const Text(
-                "finish",
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              ),
+              child: _isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      "Finish",
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
             ),
             const SizedBox(height: 30),
           ],
