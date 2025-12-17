@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'name_setup.dart';
 import 'remind_setup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
@@ -72,6 +71,7 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
 
   @override
   Widget build(BuildContext context) {
+    final userState = ref.watch(userSetupProvider);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -90,7 +90,7 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: LinearProgressIndicator(
-                    value: 0.83,
+                    value: userState.progress,
                     minHeight: 12,
                     backgroundColor: Colors.grey.shade300,
                     valueColor: const AlwaysStoppedAnimation(Color(0xFFFB4452)),
@@ -98,7 +98,7 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
                 ),
               ),
               const SizedBox(width: 16),
-              const Text('5/6', style: TextStyle(color: Colors.black)),
+              Text('${userState.completedSteps}/6', style: const TextStyle(color: Colors.black)),
             ],
           ),
         ),

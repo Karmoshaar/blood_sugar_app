@@ -1,7 +1,5 @@
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:flutter/material.dart';
-import 'package:numberpicker/numberpicker.dart';
-import 'name_setup.dart';
 import 'package:blood_sugar_app_1/HealthData/sugar_stats.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
@@ -19,6 +17,7 @@ class _remindSetupState extends ConsumerState<remindSetup> {
 
   @override
   Widget build(BuildContext context) {
+    final userState = ref.watch(userSetupProvider);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -37,7 +36,7 @@ class _remindSetupState extends ConsumerState<remindSetup> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: LinearProgressIndicator(
-                    value: 1.0,
+                    value: userState.progress,
                     minHeight: 12,
                     backgroundColor: Colors.grey.shade300,
                     valueColor: const AlwaysStoppedAnimation(Color(0xFFFB4452)),
@@ -45,7 +44,7 @@ class _remindSetupState extends ConsumerState<remindSetup> {
                 ),
               ),
               const SizedBox(width: 16),
-              const Text('6/6', style: TextStyle(color: Colors.black)),
+              Text('${userState.completedSteps}/6', style: TextStyle(color: Colors.black)),
             ],
           ),
         ),

@@ -15,9 +15,9 @@ class _DateSetupState extends ConsumerState<DateSetup> {
   DateTime _selectedDate = DateTime.now();
   final DateTime _minDate = DateTime(1900, 1, 1);
   final DateTime _maxDate = DateTime.now();
-
   @override
   Widget build(BuildContext context) {
+    final userState = ref.watch(userSetupProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -32,7 +32,7 @@ class _DateSetupState extends ConsumerState<DateSetup> {
             children: [
               Expanded(
                 child: LinearProgressIndicator(
-                  value: 0.5,
+                  value:userState.progress,
                   color: const Color.fromARGB(255, 251, 68, 82),
                   backgroundColor: Colors.grey.shade300,
                   minHeight: 12,
@@ -40,7 +40,9 @@ class _DateSetupState extends ConsumerState<DateSetup> {
                 ),
               ),
               const SizedBox(width: 16),
-              const Text('3/6', style: TextStyle(color: Colors.black)),
+      Text(
+        '${userState.completedSteps}/6',
+        style: const TextStyle(color: Colors.black)),
             ],
           ),
         ),

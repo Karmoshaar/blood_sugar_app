@@ -32,4 +32,20 @@ class UserSetupState {
       reminderTime: reminderTime ?? this.reminderTime,
     );
   }
+  int get completedSteps {
+    int count = 0;
+
+    if (name != null && name!.isNotEmpty) count++;
+    if (gender != null) count++;
+    if (birthDate != null) count++;
+    if (weight != null) count++;
+    if (height != null) count++;
+    if (reminderTime != null) count++;
+
+    return count;
+  }
+
+  double get progress => completedSteps / 6;
+
 }
+

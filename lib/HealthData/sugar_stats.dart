@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'dart:math' as math;
 
 Widget _buildStat(String value, String label) {
   return Column(
@@ -282,7 +281,7 @@ class _SugarStatsState extends State<SugarStats> {
                                   alignment: BarChartAlignment.spaceAround,
                                   maxY: 200,
 
-                                  barTouchData: BarTouchData(enabled:false),
+                                  barTouchData: BarTouchData(enabled: false),
                                   titlesData: FlTitlesData(
                                     leftTitles: AxisTitles(
                                       sideTitles: SideTitles(
@@ -400,16 +399,17 @@ class _SugarStatsState extends State<SugarStats> {
                                           end: Alignment.bottomCenter,
                                         ),
                                       ),
-                                      dotData: FlDotData(show: true,),
+                                      dotData: FlDotData(show: true),
                                     ),
-
                                   ],
                                 ),
                               ),
                       ),
                       const SizedBox(height: 10),
                       Center(
-                        child: ElevatedButton(onPressed: (){},  style: ElevatedButton.styleFrom(
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
                             backgroundColor: const Color.fromARGB(
                               255,
                               251,
@@ -426,11 +426,11 @@ class _SugarStatsState extends State<SugarStats> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             elevation: 0,
-                            alignment: Alignment.bottomCenter
-                        ),
+                            alignment: Alignment.bottomCenter,
+                          ),
                           child: const Text("add"),
-                        )     ,
-                      )
+                        ),
+                      ),
                     ],
                   ),
                 ),

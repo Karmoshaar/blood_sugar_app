@@ -35,6 +35,7 @@ class _WeightSetupState extends ConsumerState<WeightSetup> {
 
   @override
   Widget build(BuildContext context) {
+    final userState = ref.watch(userSetupProvider);
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -50,7 +51,7 @@ class _WeightSetupState extends ConsumerState<WeightSetup> {
             children: [
               Expanded(
                 child: LinearProgressIndicator(
-                  value: 0.67,
+                  value: userState.progress,
                   color: const Color.fromARGB(255, 251, 68, 82),
                   backgroundColor: Colors.grey.shade300,
                   minHeight: 12,
@@ -58,7 +59,10 @@ class _WeightSetupState extends ConsumerState<WeightSetup> {
                 ),
               ),
               const SizedBox(width: 16),
-              const Text('4/6', style: TextStyle(color: Colors.black)),
+              Text(
+                '${userState.completedSteps}/6',
+                style: TextStyle(color: Colors.black),
+              ),
             ],
           ),
         ),

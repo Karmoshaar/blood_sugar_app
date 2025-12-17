@@ -16,6 +16,7 @@ class _GenderSetupState extends ConsumerState<GenderSetup> {
 
   @override
   Widget build(BuildContext context) {
+    final userState = ref.watch(userSetupProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -30,7 +31,7 @@ class _GenderSetupState extends ConsumerState<GenderSetup> {
             children: [
               Expanded(
                 child: LinearProgressIndicator(
-                  value: 0.32,
+                  value: userState.progress,
                   color: const Color.fromARGB(255, 251, 68, 82),
                   backgroundColor: Colors.grey.shade300,
                   minHeight: 12,
@@ -38,7 +39,10 @@ class _GenderSetupState extends ConsumerState<GenderSetup> {
                 ),
               ),
               const SizedBox(width: 16),
-              const Text('2/6', style: TextStyle(color: Colors.black)),
+              Text(
+                '${userState.completedSteps}/6',
+                style: TextStyle(color: Colors.black),
+              ),
             ],
           ),
         ),
