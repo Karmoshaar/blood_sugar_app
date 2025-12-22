@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-
+import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 class SplashScreen1 extends StatefulWidget {
   const SplashScreen1({super.key});
 
@@ -20,7 +20,7 @@ class _SplashScreen1State extends State<SplashScreen1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 251, 68, 82),
+      backgroundColor: AppColors.primary,
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,

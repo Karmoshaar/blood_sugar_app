@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'name_setup.dart';
-
+import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 class AccountSetup extends StatelessWidget {
   const AccountSetup({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -47,7 +47,7 @@ class AccountSetup extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 251, 68, 82),
+                      backgroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -55,7 +55,7 @@ class AccountSetup extends StatelessWidget {
                     ),
                     child: const Text(
                       "OK, let's start",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                      style:  TextStyle(color: AppColors.textWhite, fontSize: 18),
                     ),
                   ),
                 ),

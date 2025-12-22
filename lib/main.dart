@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'splash_screen/splash_screen_1.dart';
 import 'splash_screen/splash_screen.dart';
-import 'AccountSetaup/account_setup.dart';
+import 'AccountSetup/account_setup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'HealthData/sugar_stats.dart';
 import 'core/providers/dio_provider.dart';
 import 'package:blood_sugar_app_1/services/api_services.dart';
 import 'models/user_model.dart';
-
+import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

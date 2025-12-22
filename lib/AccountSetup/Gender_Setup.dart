@@ -3,7 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'date_setup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
-
+import 'widgets/setup_progress_bar.dart';
+import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 class GenderSetup extends ConsumerStatefulWidget {
   const GenderSetup({super.key});
 
@@ -15,37 +16,29 @@ class _GenderSetupState extends ConsumerState<GenderSetup> {
   String? selectedGender;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = ref.read(userSetupProvider);
+      if (state.gender != null) {
+        setState(() {
+          selectedGender = state.gender;
+        });
+      }
+    });
+  }
+
   Widget build(BuildContext context) {
     final userState = ref.watch(userSetupProvider);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
         ),
-        title: Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: Row(
-            children: [
-              Expanded(
-                child: LinearProgressIndicator(
-                  value: userState.progress,
-                  color: const Color.fromARGB(255, 251, 68, 82),
-                  backgroundColor: Colors.grey.shade300,
-                  minHeight: 12,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Text(
-                '${userState.completedSteps}/6',
-                style: TextStyle(color: Colors.black),
-              ),
-            ],
-          ),
-        ),
+        title:  SetupProgressBar(currentPage: 2),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -90,8 +83,8 @@ class _GenderSetupState extends ConsumerState<GenderSetup> {
                     }
                   : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 251, 68, 82),
-                disabledBackgroundColor: Colors.grey.shade300,
+                backgroundColor: AppColors.primary,
+                disabledBackgroundColor: AppColors.border,
                 padding: const EdgeInsets.symmetric(
                   vertical: 16,
                   horizontal: 80,
@@ -102,7 +95,7 @@ class _GenderSetupState extends ConsumerState<GenderSetup> {
               ),
               child: const Text(
                 "Continue",
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                style:  TextStyle(color: AppColors.textWhite, fontSize: 18),
               ),
             ),
             const SizedBox(height: 30),
@@ -124,7 +117,7 @@ class _GenderSetupState extends ConsumerState<GenderSetup> {
         child: CircleAvatar(
           radius: 60,
           backgroundColor: isSelected
-              ? const Color.fromARGB(255, 251, 68, 82)
+              ?  AppColors.primary
               : Colors.grey[300],
           child: FaIcon(icon, color: Colors.white, size: 40),
         ),

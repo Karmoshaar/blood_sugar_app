@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'Gender_Setup.dart';
+import 'widgets/setup_progress_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
-
+import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 class NameSetup extends ConsumerStatefulWidget {
   const NameSetup({super.key});
 
@@ -14,9 +15,14 @@ class _NameSetupState extends ConsumerState<NameSetup> {
   final TextEditingController _nameController = TextEditingController();
 
   @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = ref.read(userSetupProvider);
+      if (state.name != null) {
+        _nameController.text = state.name!;
+      }
+    });
   }
 
   @override
@@ -24,30 +30,13 @@ class _NameSetupState extends ConsumerState<NameSetup> {
     final userState = ref.watch(userSetupProvider);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
         ),
-        title: Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: Row(
-            children: [
-              Expanded(
-                child: LinearProgressIndicator(
-                  value: userState.progress,
-                  color: const Color.fromARGB(255, 251, 68, 82),
-                  backgroundColor: Colors.grey.shade300,
-                  minHeight: 12,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              const SizedBox(width: 16),
-             Text('${userState.completedSteps}/6', style: TextStyle(color: Colors.black)),
-            ],
-          ),
-        ),
+        title: SetupProgressBar(currentPage: 1),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -91,7 +80,7 @@ class _NameSetupState extends ConsumerState<NameSetup> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 251, 68, 82),
+                backgroundColor:  AppColors.primary,
                 padding: const EdgeInsets.symmetric(
                   vertical: 16,
                   horizontal: 80,
@@ -102,7 +91,7 @@ class _NameSetupState extends ConsumerState<NameSetup> {
               ),
               child: const Text(
                 "Continue",
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                style:  TextStyle(color: AppColors.textWhite, fontSize: 18),
               ),
             ),
             const SizedBox(height: 30),

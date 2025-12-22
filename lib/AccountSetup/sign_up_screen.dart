@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:blood_sugar_app_1/AccountSetaup/account_setup.dart';
-
+import 'package:blood_sugar_app_1/AccountSetup/account_setup.dart';
+import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -16,10 +16,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -74,9 +74,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Row(
               children: [
                 Checkbox(
-                  activeColor: Color.fromARGB(255, 251, 68, 82),
+                  activeColor: AppColors.primary,
                   side: BorderSide(
-                    color: Color.fromARGB(255, 251, 68, 82),
+                    color: AppColors.primary,
                     width: 2,
                   ),
                   value: agree,
@@ -90,12 +90,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: RichText(
                     text: TextSpan(
                       text: "I agree to Pulsey ",
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(color: AppColors.textPrimary),
                       children: [
                         TextSpan(
                           text: "Terms & Conditions",
                           style: TextStyle(
-                            color: Color.fromARGB(255, 251, 68, 82),
+                            color: AppColors.primary,
                           ),
                         ),
                       ],
@@ -120,7 +120,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Text(
                     "Sign in",
                     style: TextStyle(
-                      color: Color.fromARGB(255, 251, 68, 82),
+                      color: AppColors.primary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -147,7 +147,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _socialButton(Icons.g_mobiledata, Colors.red),
-                _socialButton(Icons.apple, Colors.black),
+                _socialButton(Icons.apple, AppColors.textPrimary),
                 _socialButton(Icons.facebook, Colors.blue),
                 _socialButton(Icons.close, Colors.grey),
               ],
@@ -167,7 +167,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 251, 68, 82),
+                  backgroundColor: AppColors.primary,
                   padding: EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -190,7 +190,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: AppColors.border),
       ),
       child: Icon(icon, color: color, size: 28),
     );

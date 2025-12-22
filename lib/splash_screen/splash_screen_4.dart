@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-
+import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 class SplashScreen4 extends StatelessWidget {
   const SplashScreen4({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 251, 68, 82),
+      backgroundColor: AppColors.primary,
       body: SafeArea(
         child: Column(
           children: [
@@ -17,8 +17,8 @@ class SplashScreen4 extends StatelessWidget {
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Color.fromARGB(255, 251, 68, 82),
-                      Color.fromARGB(255, 251, 68, 82),
+                      AppColors.primary,
+                      AppColors.primary,
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,

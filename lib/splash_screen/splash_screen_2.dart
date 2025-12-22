@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-
+import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 class SplashScreen2 extends StatelessWidget {
   const SplashScreen2({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 251, 68, 82),
+      backgroundColor: AppColors.primary,
       body: SafeArea(
         child: Column(
           children: [
@@ -14,7 +14,7 @@ class SplashScreen2 extends StatelessWidget {
               flex: 3,
               child: Container(
                 width: double.infinity,
-                color: const Color.fromARGB(255, 251, 68, 82),
+                color: AppColors.primary,
                 child: Center(
                   child: Image.asset(
                     'asset/image/mobile2.png',

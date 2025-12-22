@@ -3,6 +3,8 @@ import 'package:numberpicker/numberpicker.dart';
 import 'remind_setup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
+import 'widgets/setup_progress_bar.dart';
+import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 class HeightSetup extends ConsumerStatefulWidget {
   const HeightSetup({super.key});
 
@@ -13,26 +15,71 @@ class HeightSetup extends ConsumerStatefulWidget {
 class _HeightSetupState extends ConsumerState<HeightSetup> {
   int _cm = 170;
   bool _isCm = true;
-
-  // للفيديو: feet و inches
   int _feet = 5;
   int _inches = 7;
+  bool _initialized = false;
 
   static const double _cmToInchFactor = 0.393701;
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_initialized) {
+      _loadSavedData();
+      _initialized = true;
+    }
+  }
+
+  void _loadSavedData() {
+    final state = ref.read(userSetupProvider);
+
+    if (state.height != null && state.height! > 0) {
+      setState(() {
+        _cm = state.height!.toInt();
+        _updateFeetInches();
+      });
+    }
+  }
+
   String get _displayText {
     if (_isCm) return '$_cm cm';
-    return "${_feet}’${_inches}\"";
+    return "${_feet}'${_inches}\"";
   }
 
   void _updateFeetInches() {
-    int totalInches = (_cm * _cmToInchFactor).round();
+    // التحقق من صحة القيمة
+    if (_cm < 100 || _cm > 220) {
+      _cm = 170;
+    }
+
+    final totalInches = (_cm * _cmToInchFactor).round();
     _feet = totalInches ~/ 12;
     _inches = totalInches % 12;
+
+    // تأكد من القيم ضمن النطاق
+    if (_feet < 3) _feet = 3;
+    if (_feet > 7) _feet = 7;
+    if (_inches < 0) _inches = 0;
+    if (_inches > 11) _inches = 11;
   }
 
   void _updateCmFromFeetInches() {
-    _cm = ((_feet * 12 + _inches) / _cmToInchFactor).round();
+    final totalInches = _feet * 12 + _inches;
+    _cm = (totalInches / _cmToInchFactor).round();
+
+    // تأكد من القيمة ضمن النطاق
+    if (_cm < 100) _cm = 100;
+    if (_cm > 220) _cm = 220;
+  }
+
+  void _saveAndContinue() {
+    ref.read(userSetupProvider.notifier).setHeight(_cm.toDouble());
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const remindSetup()),
+    );
   }
 
   Widget _unitButton(String label, bool active, VoidCallback onTap) {
@@ -42,10 +89,10 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         decoration: BoxDecoration(
-          color: active ? const Color(0xFFFB4452) : Colors.transparent,
+          color: active ?  AppColors.primaryDark : Colors.transparent,
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
-            color: active ? Colors.transparent : Colors.grey.shade400,
+            color: active ? Colors.transparent : AppColors.disabled,
           ),
           boxShadow: active
               ? [
@@ -60,7 +107,7 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
         child: Text(
           label,
           style: TextStyle(
-            color: active ? Colors.white : Colors.black87,
+            color: active ? Colors.white : AppColors.textPrimary,
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
@@ -71,37 +118,17 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
 
   @override
   Widget build(BuildContext context) {
-    final userState = ref.watch(userSetupProvider);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         titleSpacing: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
         ),
-        title: Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: Row(
-            children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: LinearProgressIndicator(
-                    value: userState.progress,
-                    minHeight: 12,
-                    backgroundColor: Colors.grey.shade300,
-                    valueColor: const AlwaysStoppedAnimation(Color(0xFFFB4452)),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Text('${userState.completedSteps}/6', style: const TextStyle(color: Colors.black)),
-            ],
-          ),
-        ),
+        title: const SetupProgressBar(currentPage: 5),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -115,27 +142,33 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
             ),
             const SizedBox(height: 20),
 
+            // اختيار الوحدة
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _unitButton('cm', _isCm, () {
-                  setState(() {
-                    _isCm = true;
-                  });
+                  if (!_isCm) {
+                    setState(() {
+                      _isCm = true;
+                      // لا حاجة لتحديث شي، _cm موجود
+                    });
+                  }
                 }),
                 const SizedBox(width: 12),
                 _unitButton('ft', !_isCm, () {
-                  setState(() {
-                    _isCm = false;
-                    _updateFeetInches(); // تحديث القيمة عند التبديل
-                  });
+                  if (_isCm) {
+                    setState(() {
+                      _isCm = false;
+                      _updateFeetInches();
+                    });
+                  }
                 }),
               ],
             ),
 
             const SizedBox(height: 20),
 
-            // NumberPicker
+            // Number Picker
             if (_isCm)
               SizedBox(
                 height: 250,
@@ -146,15 +179,19 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
                   step: 1,
                   itemHeight: 50,
                   selectedTextStyle: const TextStyle(
-                    color: Color(0xFFFB4452),
+                    color: AppColors.primaryDark,
                     fontSize: 28,
                     fontWeight: FontWeight.w700,
                   ),
-                  textStyle:
-                  TextStyle(color: Colors.grey.shade400, fontSize: 18),
-                  onChanged: (v) => setState(() {
-                    _cm = v;
-                  }),
+                  textStyle: TextStyle(
+                    color: AppColors.disabled,
+                    fontSize: 18,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _cm = value;
+                    });
+                  },
                 ),
               )
             else
@@ -163,7 +200,6 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Feet picker
                     NumberPicker(
                       value: _feet,
                       minValue: 3,
@@ -171,21 +207,24 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
                       step: 1,
                       itemHeight: 50,
                       selectedTextStyle: const TextStyle(
-                        color: Color(0xFFFB4452),
+                        color: AppColors.primaryDark,
                         fontSize: 28,
                         fontWeight: FontWeight.w700,
                       ),
-                      textStyle:
-                      TextStyle(color: Colors.grey.shade400, fontSize: 18),
-                      onChanged: (v) => setState(() {
-                        _feet = v;
-                        _updateCmFromFeetInches();
-                      }),
+                      textStyle: TextStyle(
+                        color: AppColors.disabled,
+                        fontSize: 18,
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _feet = value;
+                          _updateCmFromFeetInches();
+                        });
+                      },
                     ),
                     const SizedBox(width: 8),
-                    const Text("’", style: TextStyle(fontSize: 28)),
+                    const Text("'", style: TextStyle(fontSize: 28)),
                     const SizedBox(width: 8),
-                    // Inches picker
                     NumberPicker(
                       value: _inches,
                       minValue: 0,
@@ -193,16 +232,20 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
                       step: 1,
                       itemHeight: 50,
                       selectedTextStyle: const TextStyle(
-                        color: Color(0xFFFB4452),
+                        color: AppColors.primaryDark,
                         fontSize: 28,
                         fontWeight: FontWeight.w700,
                       ),
-                      textStyle:
-                      TextStyle(color: Colors.grey.shade400, fontSize: 18),
-                      onChanged: (v) => setState(() {
-                        _inches = v;
-                        _updateCmFromFeetInches();
-                      }),
+                      textStyle: TextStyle(
+                        color: AppColors.disabled,
+                        fontSize: 18,
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _inches = value;
+                          _updateCmFromFeetInches();
+                        });
+                      },
                     ),
                     const SizedBox(width: 8),
                     const Text("\"", style: TextStyle(fontSize: 28)),
@@ -212,7 +255,7 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
 
             const SizedBox(height: 20),
 
-            // النص الكبير مع الخط الرمادي فوقه
+            // عرض القيمة
             Stack(
               alignment: Alignment.center,
               children: [
@@ -221,7 +264,7 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
                   child: Container(
                     width: 80,
                     height: 2,
-                    color: Colors.grey.shade400,
+                    color: AppColors.disabled,
                   ),
                 ),
                 Padding(
@@ -231,7 +274,7 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
                     style: const TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFFFB4452),
+                      color: AppColors.primaryDark,
                     ),
                   ),
                 ),
@@ -240,17 +283,11 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
 
             const Spacer(),
 
+            // زر المتابعة
             ElevatedButton(
-              onPressed: () {
-                ref.read(userSetupProvider.notifier).setHeight(_cm.toDouble());
-                print('تم طباعة الطول:$_cm cm');
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const remindSetup()),
-                );
-              },
+              onPressed: _saveAndContinue,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFB4452),
+                backgroundColor: AppColors.primaryDark,
                 padding: const EdgeInsets.symmetric(
                   vertical: 16,
                   horizontal: 80,
@@ -263,7 +300,7 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
               ),
               child: const Text(
                 "Continue",
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                style:  TextStyle(color: AppColors.textWhite, fontSize: 18),
               ),
             ),
             const SizedBox(height: 30),

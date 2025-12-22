@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:blood_sugar_app_1/HealthData/sugar_stats.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
-
+import 'widgets/setup_progress_bar.dart';
+import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 class remindSetup extends ConsumerStatefulWidget {
   const remindSetup({super.key});
 
@@ -19,35 +20,16 @@ class _remindSetupState extends ConsumerState<remindSetup> {
   Widget build(BuildContext context) {
     final userState = ref.watch(userSetupProvider);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         titleSpacing: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
         ),
-        title: Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: Row(
-            children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: LinearProgressIndicator(
-                    value: userState.progress,
-                    minHeight: 12,
-                    backgroundColor: Colors.grey.shade300,
-                    valueColor: const AlwaysStoppedAnimation(Color(0xFFFB4452)),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Text('${userState.completedSteps}/6', style: TextStyle(color: Colors.black)),
-            ],
-          ),
-        ),
+        title: SetupProgressBar(currentPage: 6),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -75,7 +57,7 @@ class _remindSetupState extends ConsumerState<remindSetup> {
                   ),
                   highlightedTextStyle: const TextStyle(
                     fontSize: 24,
-                    color: Color.fromARGB(255, 251, 68, 82),
+                    color: AppColors.primary,
                     fontWeight: FontWeight.bold,
                   ),
                   spacing: 50,
@@ -153,7 +135,7 @@ class _remindSetupState extends ConsumerState<remindSetup> {
                       }
                     },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFB4452),
+                backgroundColor: AppColors.primaryDark,
                 padding: const EdgeInsets.symmetric(
                   vertical: 16,
                   horizontal: 80,
@@ -175,7 +157,7 @@ class _remindSetupState extends ConsumerState<remindSetup> {
                     )
                   : const Text(
                       "Finish",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                      style:  TextStyle(color: AppColors.textWhite, fontSize: 18),
                     ),
             ),
             const SizedBox(height: 30),

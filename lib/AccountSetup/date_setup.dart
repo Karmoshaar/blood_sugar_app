@@ -3,7 +3,8 @@ import 'package:dss_cupertino_date_picker/dss_cupertino_date_picker.dart';
 import 'weight_setup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
-
+import 'widgets/setup_progress_bar.dart';
+import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 class DateSetup extends ConsumerStatefulWidget {
   const DateSetup({super.key});
 
@@ -15,37 +16,31 @@ class _DateSetupState extends ConsumerState<DateSetup> {
   DateTime _selectedDate = DateTime.now();
   final DateTime _minDate = DateTime(1900, 1, 1);
   final DateTime _maxDate = DateTime.now();
+
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPersistentFrameCallback((_) {
+      final state = ref.read(userSetupProvider);
+      if (state.birthDate != null) {
+        setState(() {
+          _selectedDate = state.birthDate!;
+        });
+      }
+    });
+  }
+
   Widget build(BuildContext context) {
     final userState = ref.watch(userSetupProvider);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
         ),
-        title: Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: Row(
-            children: [
-              Expanded(
-                child: LinearProgressIndicator(
-                  value:userState.progress,
-                  color: const Color.fromARGB(255, 251, 68, 82),
-                  backgroundColor: Colors.grey.shade300,
-                  minHeight: 12,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              const SizedBox(width: 16),
-      Text(
-        '${userState.completedSteps}/6',
-        style: const TextStyle(color: Colors.black)),
-            ],
-          ),
-        ),
+        title: SetupProgressBar(currentPage: 3),
       ),
       body: Column(
         children: <Widget>[
@@ -67,23 +62,23 @@ class _DateSetupState extends ConsumerState<DateSetup> {
                 decoration: const BoxDecoration(
                   border: Border.symmetric(
                     horizontal: BorderSide(
-                      color: Color.fromARGB(255, 251, 68, 82),
+                      color: AppColors.primary,
                       width: 1,
                     ),
                   ),
                 ),
               ),
               selectedStyle: const TextStyle(
-                color: Color.fromARGB(255, 251, 68, 82),
+                color: AppColors.primary,
                 fontWeight: FontWeight.w600,
                 fontSize: 24,
               ),
               unselectedStyle: const TextStyle(
-                color: Colors.black,
+                color: AppColors.textPrimary,
                 fontSize: 18,
               ),
               disabledStyle: const TextStyle(
-                color: Color.fromARGB(255, 251, 68, 82),
+                color: AppColors.primary,
                 fontSize: 18,
               ),
               onSelectedItemChanged: (date) {
@@ -102,7 +97,7 @@ class _DateSetupState extends ConsumerState<DateSetup> {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 251, 68, 82),
+              backgroundColor:  AppColors.primary,
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 80),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(32),
@@ -110,7 +105,7 @@ class _DateSetupState extends ConsumerState<DateSetup> {
             ),
             child: const Text(
               "Continue",
-              style: TextStyle(color: Colors.white, fontSize: 18),
+              style:  TextStyle(color: AppColors.textWhite, fontSize: 18),
             ),
           ),
           const SizedBox(height: 30),

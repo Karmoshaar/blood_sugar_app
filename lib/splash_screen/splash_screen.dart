@@ -3,9 +3,9 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'splash_screen_2.dart';
 import 'splash_screen_3.dart';
 import 'splash_screen_4.dart';
-import 'package:blood_sugar_app_1/AccountSetaup/sign_up_screen.dart';
-import 'package:blood_sugar_app_1/AccountSetaup/account_setup.dart';
-
+import 'package:blood_sugar_app_1/AccountSetup/sign_up_screen.dart';
+import 'package:blood_sugar_app_1/AccountSetup/account_setup.dart';
+import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 class SplashMain extends StatefulWidget {
   @override
   _SplashMainState createState() => _SplashMainState();
@@ -43,7 +43,7 @@ class _SplashMainState extends State<SplashMain> {
               controller: _controller,
               count: 3,
               effect: ExpandingDotsEffect(
-                activeDotColor: Color.fromARGB(255, 251, 68, 82),
+                activeDotColor: AppColors.primary,
                 dotColor: Colors.grey,
               ),
             ),
@@ -68,7 +68,7 @@ class _SplashMainState extends State<SplashMain> {
                         child: Text(
                           "Skip",
                           style: TextStyle(
-                            color: Color.fromARGB(255, 251, 68, 82),
+                            color: AppColors.primary,
                             fontSize: 18,
                           ),
                         ),
@@ -94,11 +94,11 @@ class _SplashMainState extends State<SplashMain> {
                       },
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(vertical: 14),
-                        backgroundColor: Color.fromARGB(255, 251, 68, 82),
+                        backgroundColor: AppColors.primary,
                       ),
                       child: Text(
                         isLastPage ? "Let's Get Started" : "Continue",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                        style: TextStyle(color: AppColors.textWhite, fontSize: 18),
                       ),
                     ),
                   ),

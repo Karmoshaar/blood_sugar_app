@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 
 Widget _buildStat(String value, String label) {
   return Column(
@@ -33,11 +34,11 @@ class _SugarStatsState extends State<SugarStats> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
         ),
       ),
       body: Column(
@@ -126,8 +127,8 @@ class _SugarStatsState extends State<SugarStats> {
                         onPressed: () =>
                             setState(() => _selected = ChartType.bar),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          side: BorderSide(color: Colors.grey.shade300),
+                          foregroundColor: AppColors.textPrimary,
+                          side: BorderSide(color: AppColors.border),
                           minimumSize: const Size(170, 40),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 24,
@@ -169,8 +170,8 @@ class _SugarStatsState extends State<SugarStats> {
                         onPressed: () =>
                             setState(() => _selected = ChartType.line),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          side: BorderSide(color: Colors.grey.shade300),
+                          foregroundColor: AppColors.textPrimary,
+                          side: BorderSide(color: AppColors.border),
                           minimumSize: const Size(170, 40),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 24,
@@ -214,7 +215,7 @@ class _SugarStatsState extends State<SugarStats> {
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
                                   color: _selected == ChartType.bar
-                                      ? const Color(0xFFFB4452)
+                                      ?  AppColors.primaryDark
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -233,7 +234,7 @@ class _SugarStatsState extends State<SugarStats> {
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
                                   color: _selected == ChartType.line
-                                      ? const Color(0xFFFB4452)
+                                      ? AppColors.primaryDark
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -329,8 +330,8 @@ class _SugarStatsState extends State<SugarStats> {
                                           ),
                                           gradient: LinearGradient(
                                             colors: [
-                                              Color(0xFFFF9AA2),
-                                              Color(0xFFFB4452),
+                                              AppColors.primaryLight,
+                                              AppColors.primaryDark,
                                             ],
                                             begin: Alignment.topCenter,
                                             end: Alignment.bottomCenter,
@@ -392,7 +393,7 @@ class _SugarStatsState extends State<SugarStats> {
                                         show: false,
                                         gradient: LinearGradient(
                                           colors: [
-                                            Color(0xFFFB4452).withOpacity(0.3),
+                                            AppColors.primaryDark.withOpacity(0.3),
                                             Colors.transparent,
                                           ],
                                           begin: Alignment.topCenter,
