@@ -20,7 +20,7 @@ class _DateSetupState extends ConsumerState<DateSetup> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPersistentFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback ((_) {
       final state = ref.read(userSetupProvider);
       if (state.birthDate != null) {
         setState(() {
