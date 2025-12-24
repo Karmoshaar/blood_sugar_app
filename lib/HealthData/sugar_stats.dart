@@ -84,7 +84,7 @@ class _SugarStatsState extends State<SugarStats> {
               ),
               Positioned(
                 top: -2,
-                right: -5,
+                right: 0,
                 child: Image.asset(
                   "asset/image/bubble.png",
                   width: 100,

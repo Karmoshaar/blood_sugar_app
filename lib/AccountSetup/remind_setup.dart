@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
 import 'widgets/setup_progress_bar.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
+import 'package:blood_sugar_app_1/features/auth/auth_provider.dart';
+
 class remindSetup extends ConsumerStatefulWidget {
   const remindSetup({super.key});
 
@@ -94,9 +96,16 @@ class _remindSetupState extends ConsumerState<remindSetup> {
                         print('⏰ وقت التذكير: $_selectedTime');
 
                         // إرسال البيانات
-                        await ref
-                            .read(userSetupProvider.notifier)
-                            .completeSetup();
+                        final userSetup = ref.read(userSetupProvider);
+
+                        await ref.read(authProvider.notifier).setupAccount(
+                          name: userSetup.name!,
+                          gender: userSetup.gender!,
+                          birthDate: userSetup.birthDate!,
+                          weight: userSetup.weight!,
+                          height: userSetup.height!,
+                        );
+
 
                         print('✅ تم إرسال البيانات بنجاح!');
 
@@ -157,7 +166,10 @@ class _remindSetupState extends ConsumerState<remindSetup> {
                     )
                   : const Text(
                       "Finish",
-                      style:  TextStyle(color: AppColors.textWhite, fontSize: 18),
+                      style: TextStyle(
+                        color: AppColors.textWhite,
+                        fontSize: 18,
+                      ),
                     ),
             ),
             const SizedBox(height: 30),

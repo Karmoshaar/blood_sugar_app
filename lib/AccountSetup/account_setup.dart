@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'name_setup.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
-class AccountSetup extends StatelessWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+class AccountSetup extends ConsumerStatefulWidget {
   const AccountSetup({super.key});
-
+  @override
+  ConsumerState<AccountSetup> createState() => _AccountSetupState();
+}
+class _AccountSetupState extends ConsumerState<AccountSetup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +59,10 @@ class AccountSetup extends StatelessWidget {
                     ),
                     child: const Text(
                       "OK, let's start",
-                      style:  TextStyle(color: AppColors.textWhite, fontSize: 18),
+                      style: TextStyle(
+                        color: AppColors.textWhite,
+                        fontSize: 18,
+                      ),
                     ),
                   ),
                 ),

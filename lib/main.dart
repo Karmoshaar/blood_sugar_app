@@ -8,6 +8,7 @@ import 'core/providers/dio_provider.dart';
 import 'package:blood_sugar_app_1/services/api_services.dart';
 import 'models/user_model.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -18,6 +19,8 @@ void main() async {
   // await testApiService();
 
   runApp(
+    /// The ProviderScope widget allows Riverpod to manage state for its child widgets.
+    /// Here, it wraps the root MyApp widget to enable Riverpod state management throughout the app.
     ProviderScope(child: MyApp()),
   );
 }

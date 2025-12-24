@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:blood_sugar_app_1/models/user_model.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/dio_provider.dart';
+import 'package:blood_sugar_app_1/models/sugar_reading_model.dart';
 class ApiServices {
   final Dio _dio;
   ApiServices(this._dio);
@@ -57,6 +58,21 @@ class ApiServices {
       default:
         return Exception('خطأ في الاتصال بالإنترنت');
     }
+  }
+  Future<void> postSugarReading(SugarReading reading) async {
+    await _dio.post(
+      '/sugar-readings',
+      data: reading.toJson(),
+    );
+  }
+
+  Future<List<SugarReading>> getSugarReadings() async {
+    final response = await _dio.get('/sugar-readings');
+
+    final List data = response.data;
+    return data
+        .map((e) => SugarReading.fromJson(e))
+        .toList();
   }
 
 }
