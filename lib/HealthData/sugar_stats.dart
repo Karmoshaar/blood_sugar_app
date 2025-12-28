@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:blood_sugar_app_1/features/health/sugar_provider.dart';
+import 'package:blood_sugar_app_1/core/providers/sugar_provider.dart';
+import 'package:blood_sugar_app_1/widgets/add_sugar_dialog.dart';
+
+import '../models/sugar_reading_model.dart';
+
 Widget _buildStat(String value, String label) {
   return Column(
     children: [
@@ -26,36 +30,46 @@ class SugarStats extends ConsumerStatefulWidget {
 }
 
 class _SugarStatsState extends ConsumerState<SugarStats> {
-  Widget _buildBarChart(List<double> weeklyData) {
+  Widget _buildBarChart(List<SugarReading> readings) {
+    final displayed = readings.length > 7
+        ? readings.sublist(readings.length - 7)
+        : readings;
+    final maxValue = displayed
+        .map((e) => e.value)
+        .reduce((a, b) => a > b ? a : b)
+        .toDouble();
+
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
-        maxY: 200,
+        maxY: maxValue + 20,
         barTouchData: BarTouchData(enabled: false),
         titlesData: FlTitlesData(
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
+          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
         borderData: FlBorderData(show: false),
-        gridData: FlGridData(show: false),
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: false,
+          getDrawingHorizontalLine: (value) {
+            return FlLine(
+              color: Colors.grey.withOpacity(0.1),
+              strokeWidth: 1,
+            );
+          },
+        ),
         barGroups: List.generate(
-          weeklyData.length,
-              (i) => BarChartGroupData(
+          displayed.length,
+          (i) => BarChartGroupData(
             x: i,
             barRods: [
               BarChartRodData(
-                toY: weeklyData[i],
-                width: 20,
+                toY: displayed[i].value.toDouble(),
+                width: 28,
                 borderRadius: BorderRadius.circular(12),
                 gradient: LinearGradient(
-                  colors: [
-                    AppColors.primaryLight,
-                    AppColors.primaryDark,
-                  ],
+                  colors: [AppColors.primaryLight, AppColors.primaryDark],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
@@ -66,24 +80,21 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
       ),
     );
   }
+
   Widget _buildLineChart(List<double> weeklyData) {
     return LineChart(
       LineChartData(
         gridData: FlGridData(show: false),
         borderData: FlBorderData(show: false),
         titlesData: FlTitlesData(
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
+          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
         lineBarsData: [
           LineChartBarData(
             spots: List.generate(
               weeklyData.length,
-                  (i) => FlSpot(i.toDouble(), weeklyData[i]),
+              (i) => FlSpot(i.toDouble(), weeklyData[i]),
             ),
             isCurved: true,
             barWidth: 4,
@@ -97,6 +108,7 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
 
   int _selectedTab = 1;
   ChartType _selected = ChartType.bar;
+
   @override
   Widget build(BuildContext context) {
     final sugarAsync = ref.watch(sugarProvider);
@@ -284,7 +296,7 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
                                   color: _selected == ChartType.bar
-                                      ?  AppColors.primaryDark
+                                      ? AppColors.primaryDark
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -347,27 +359,27 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
                       Expanded(
                         child: sugarAsync.when(
                           loading: () =>
-                          const Center(child: CircularProgressIndicator()),
+                              const Center(child: CircularProgressIndicator()),
+                          error: (e, _) => Center(child: Text('Error: $e')),
+                          data: (readings) {
+                            if (readings.isEmpty) {
+                              return const Center(child: Text('No data yet'));
+                            }
 
-                          error: (error, _) =>
-                              Center(child: Text(error.toString())),
-
-                          data: (data) {
-                            final weeklyData =
-                            data.map((e) => e.value.toDouble()).toList();
-
-                            return _selected == ChartType.bar
-                                ? _buildBarChart(weeklyData)
-                                : _buildLineChart(weeklyData);
+                            return _buildBarChart(readings);
                           },
                         ),
-
-
                       ),
+
                       const SizedBox(height: 10),
                       Center(
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => const AddSugarDialog(),
+                            );
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color.fromARGB(
                               255,

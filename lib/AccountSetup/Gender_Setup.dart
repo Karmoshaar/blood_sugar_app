@@ -3,7 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'date_setup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
-import 'widgets/setup_progress_bar.dart';
+import '../widgets/setup_progress_bar.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 class GenderSetup extends ConsumerStatefulWidget {
   const GenderSetup({super.key});

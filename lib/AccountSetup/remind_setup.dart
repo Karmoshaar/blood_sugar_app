@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:blood_sugar_app_1/HealthData/sugar_stats.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
-import 'widgets/setup_progress_bar.dart';
+import '../widgets/setup_progress_bar.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
-import 'package:blood_sugar_app_1/features/auth/auth_provider.dart';
+import 'package:blood_sugar_app_1/core/providers/auth_provider.dart';
 
 class remindSetup extends ConsumerStatefulWidget {
   const remindSetup({super.key});

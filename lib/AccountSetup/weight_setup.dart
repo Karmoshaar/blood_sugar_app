@@ -3,7 +3,7 @@ import 'package:numberpicker/numberpicker.dart';
 import 'height_setup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
-import 'widgets/setup_progress_bar.dart';
+import '../widgets/setup_progress_bar.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 
 class WeightSetup extends ConsumerStatefulWidget {
