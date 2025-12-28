@@ -1,82 +1,65 @@
-import 'package:blood_sugar_app_1/core/network/api_constants.dart';
 import 'package:dio/dio.dart';
-import 'package:blood_sugar_app_1/models/user_model.dart';
-import 'package:riverpod/riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blood_sugar_app_1/core/network/api_constants.dart';
 import 'package:blood_sugar_app_1/core/providers/dio_provider.dart';
 import 'package:blood_sugar_app_1/models/sugar_reading_model.dart';
-class ApiServices {
+import 'package:blood_sugar_app_1/models/user_model.dart';
+
+final apiServiceProvider = Provider<ApiService>((ref) {
+  final dio = ref.watch(dioProvider);
+  return ApiService(dio);
+});
+
+class ApiService {
   final Dio _dio;
-  ApiServices(this._dio);
-  Future<UserModel> createUser(UserModel user) async {
-    try {
-      final data = user.toJson();
 
-      print('🌐 Base URL: ${_dio.options.baseUrl}');
-      print('🌐 Endpoint: ${ApiConstants.users}');
-      print('🌐 Full URL: ${_dio.options.baseUrl}${ApiConstants.users}');
-      print('📤 البيانات: $data');
-
-      final response = await _dio.post(
-        ApiConstants.users,
-        data: data,
-      );
-
-      print('✅ Status: ${response.statusCode}');
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return UserModel.fromJson(response.data);
-      } else {
-        throw Exception('فشل في إنشاء المستخدم');
-      }
-
-    } on DioException catch (e) {
-      print('❌ DioException: ${e.type}');
-      print('❌ Response: ${e.response?.statusCode}');
-      throw _handleDioError(e);
-    } catch (e) {
-      throw Exception('خطأ غير متوقع: $e');
-    }
-  }
-  /// معالج الأخطاء الخاص بـ Dio
-  Exception _handleDioError(DioException error) {
-    switch (error.type) {
-      case DioExceptionType.connectionTimeout:
-        return Exception('انتهت مهلة الاتصال');
-
-      case DioExceptionType.sendTimeout:
-        return Exception('انتهت مهلة الإرسال');
-
-      case DioExceptionType.receiveTimeout:
-        return Exception('انتهت مهلة الاستقبال');
-
-      case DioExceptionType.badResponse:
-        return Exception('رد خاطئ من السيرفر: ${error.response?.statusCode}');
-
-      case DioExceptionType.cancel:
-        return Exception('تم إلغاء الطلب');
-
-      default:
-        return Exception('خطأ في الاتصال بالإنترنت');
-    }
-  }
-  Future<void> postSugarReading(SugarReading reading) async {
-    await _dio.post(
-      '/sugar-readings',
-      data: reading.toJson(),
-    );
-  }
+  ApiService(this._dio);
 
   Future<List<SugarReading>> getSugarReadings() async {
-    final response = await _dio.get('/sugar-readings');
-
-    final List data = response.data;
-    return data
-        .map((e) => SugarReading.fromJson(e))
-        .toList();
+    try {
+      final response = await _dio.get(ApiConstants.sugarReadings);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        return data.map((json) => SugarReading.fromJson(json)).toList();
+      }
+      return [];
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
   }
 
+  Future<void> postSugarReading(SugarReading reading) async {
+    try {
+      await _dio.post(
+        ApiConstants.sugarReadings,
+        data: reading.toJson(),
+      );
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  Future<void> createUser(UserModel user) async {
+    try {
+      await _dio.post(
+        ApiConstants.users,
+        data: user.toJson(),
+      );
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  Exception _handleDioError(DioException error) {
+    print('❌ URL: ${error.requestOptions.uri}');
+    print('❌ Status Code: ${error.response?.statusCode}');
+    print('❌ Data: ${error.response?.data}');
+
+    if (error.type == DioExceptionType.badResponse) {
+      if (error.response?.statusCode == 404) {
+        return Exception('Error 404: The endpoint "${error.requestOptions.path}" was not found on the server.');
+      }
+    }
+    return Exception('Network Error: ${error.message}');
+  }
 }
-final apiServiceProvider=Provider<ApiServices>((ref)
-{final dio =ref.watch(dioProvider);
-return ApiServices(dio);
-});

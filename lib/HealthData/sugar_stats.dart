@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blood_sugar_app_1/features/health/sugar_provider.dart';
 Widget _buildStat(String value, String label) {
   return Column(
     children: [
@@ -17,20 +18,88 @@ Widget _buildStat(String value, String label) {
 
 enum ChartType { bar, line }
 
-class SugarStats extends StatefulWidget {
+class SugarStats extends ConsumerStatefulWidget {
   const SugarStats({super.key});
 
   @override
   _SugarStatsState createState() => _SugarStatsState();
 }
 
-class _SugarStatsState extends State<SugarStats> {
+class _SugarStatsState extends ConsumerState<SugarStats> {
+  Widget _buildBarChart(List<double> weeklyData) {
+    return BarChart(
+      BarChartData(
+        alignment: BarChartAlignment.spaceAround,
+        maxY: 200,
+        barTouchData: BarTouchData(enabled: false),
+        titlesData: FlTitlesData(
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+        ),
+        borderData: FlBorderData(show: false),
+        gridData: FlGridData(show: false),
+        barGroups: List.generate(
+          weeklyData.length,
+              (i) => BarChartGroupData(
+            x: i,
+            barRods: [
+              BarChartRodData(
+                toY: weeklyData[i],
+                width: 20,
+                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primaryLight,
+                    AppColors.primaryDark,
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  Widget _buildLineChart(List<double> weeklyData) {
+    return LineChart(
+      LineChartData(
+        gridData: FlGridData(show: false),
+        borderData: FlBorderData(show: false),
+        titlesData: FlTitlesData(
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+        ),
+        lineBarsData: [
+          LineChartBarData(
+            spots: List.generate(
+              weeklyData.length,
+                  (i) => FlSpot(i.toDouble(), weeklyData[i]),
+            ),
+            isCurved: true,
+            barWidth: 4,
+            color: AppColors.primaryDark,
+            dotData: FlDotData(show: true),
+          ),
+        ],
+      ),
+    );
+  }
+
   int _selectedTab = 1;
   ChartType _selected = ChartType.bar;
-  final List<double> weeklyData = [110, 95, 130, 120, 150, 100, 90];
-
   @override
   Widget build(BuildContext context) {
+    final sugarAsync = ref.watch(sugarProvider);
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -73,9 +142,9 @@ class _SugarStatsState extends State<SugarStats> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          _buildStat("90.6", "Average"),
-                          _buildStat("132.5", "Maximum"),
-                          _buildStat("74.9", "Minimum"),
+                          // _buildStat("90.6", "Average"),
+                          // _buildStat("132.5", "Maximum"),
+                          // _buildStat("74.9", "Minimum"),
                         ],
                       ),
                     ],
@@ -261,13 +330,13 @@ class _SugarStatsState extends State<SugarStats> {
                             onPressed: () {},
                             icon: const Icon(Icons.chevron_left),
                           ),
-                          const Text(
-                            "Dec 16 - Dec 22, 2024",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
+                          // const Text(
+                          //   "Dec 16 - Dec 22, 2024",
+                          //   style: TextStyle(
+                          //     fontSize: 14,
+                          //     fontWeight: FontWeight.w500,
+                          //   ),
+                          // ),
                           IconButton(
                             onPressed: () {},
                             icon: const Icon(Icons.chevron_right),
@@ -276,135 +345,24 @@ class _SugarStatsState extends State<SugarStats> {
                       ),
                       const SizedBox(height: 16),
                       Expanded(
-                        child: _selected == ChartType.bar
-                            ? BarChart(
-                                BarChartData(
-                                  alignment: BarChartAlignment.spaceAround,
-                                  maxY: 200,
+                        child: sugarAsync.when(
+                          loading: () =>
+                          const Center(child: CircularProgressIndicator()),
 
-                                  barTouchData: BarTouchData(enabled: false),
-                                  titlesData: FlTitlesData(
-                                    leftTitles: AxisTitles(
-                                      sideTitles: SideTitles(
-                                        showTitles: false,
-                                        reservedSize: 30,
-                                      ),
-                                    ),
-                                    bottomTitles: AxisTitles(
-                                      sideTitles: SideTitles(
-                                        showTitles: false,
-                                        getTitlesWidget: (value, meta) {
-                                          const days = [
-                                            "Mon",
-                                            "Tue",
-                                            "Wed",
-                                            "Thu",
-                                            "Fri",
-                                            "Sat",
-                                            "Sun",
-                                          ];
-                                          return Text(days[value.toInt()]);
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                  borderData: FlBorderData(show: false),
-                                  gridData: FlGridData(show: false),
-                                  barGroups: List.generate(
-                                    weeklyData.length,
-                                    (i) => BarChartGroupData(
-                                      x: i,
-                                      barRods: [
-                                        BarChartRodData(
-                                          toY: weeklyData[i],
+                          error: (error, _) =>
+                              Center(child: Text(error.toString())),
 
-                                          color: const Color.fromARGB(
-                                            255,
-                                            251,
-                                            68,
-                                            82,
-                                          ),
-                                          width: 20,
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                          gradient: LinearGradient(
-                                            colors: [
-                                              AppColors.primaryLight,
-                                              AppColors.primaryDark,
-                                            ],
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : LineChart(
-                                LineChartData(
-                                  gridData: FlGridData(show: false),
-                                  borderData: FlBorderData(show: false),
-                                  titlesData: FlTitlesData(
-                                    bottomTitles: AxisTitles(
-                                      sideTitles: SideTitles(
-                                        showTitles: false,
-                                        getTitlesWidget: (value, meta) {
-                                          const days = [
-                                            "20",
-                                            "21",
-                                            "22",
-                                            "23",
-                                            "24",
-                                            "25",
-                                            "26",
-                                          ];
-                                          if (value.toInt() >= 0 &&
-                                              value.toInt() < 7) {
-                                            return Text(days[value.toInt()]);
-                                          }
-                                          return const Text("");
-                                        },
-                                      ),
-                                    ),
-                                    leftTitles: AxisTitles(
-                                      sideTitles: SideTitles(showTitles: false),
-                                    ),
-                                  ),
+                          data: (data) {
+                            final weeklyData =
+                            data.map((e) => e.value.toDouble()).toList();
 
-                                  lineBarsData: [
-                                    LineChartBarData(
-                                      spots: List.generate(
-                                        weeklyData.length,
-                                        (i) =>
-                                            FlSpot(i.toDouble(), weeklyData[i]),
-                                      ),
-                                      isCurved: true,
-                                      color: const Color.fromARGB(
-                                        255,
-                                        251,
-                                        68,
-                                        82,
-                                      ),
+                            return _selected == ChartType.bar
+                                ? _buildBarChart(weeklyData)
+                                : _buildLineChart(weeklyData);
+                          },
+                        ),
 
-                                      barWidth: 4,
-                                      belowBarData: BarAreaData(
-                                        show: false,
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            AppColors.primaryDark.withOpacity(0.3),
-                                            Colors.transparent,
-                                          ],
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
-                                        ),
-                                      ),
-                                      dotData: FlDotData(show: true),
-                                    ),
-                                  ],
-                                ),
-                              ),
+
                       ),
                       const SizedBox(height: 10),
                       Center(

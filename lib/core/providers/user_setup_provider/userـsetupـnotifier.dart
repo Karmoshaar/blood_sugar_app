@@ -1,11 +1,10 @@
 import 'package:blood_sugar_app_1/models/user_model.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/services/api_services.dart';
 import 'user_setup_state.dart';
 
 class UserSetupNotifier extends Notifier<UserSetupState> {
-  late final ApiServices _apiService;
+  late final ApiService _apiService;
 
   @override
   UserSetupState build() {
@@ -60,19 +59,19 @@ class UserSetupNotifier extends Notifier<UserSetupState> {
       reminderTime: state.reminderTime,
     );
 
-   await _apiService.createUser(user);
-
-    state = const UserSetupState();
+    try {
+      await _apiService.createUser(user);
+      state = const UserSetupState();
+    } catch (e) {
+      // Re-throw to be handled by the UI
+      rethrow;
+    }
   }
 
   void reset() {
     state = const UserSetupState();
   }
 }
-
-final apiServiceProvider = Provider<ApiServices>((ref) {
-  return ApiServices(Dio());
-});
 
 final userSetupProvider = NotifierProvider<UserSetupNotifier, UserSetupState>(
   () => UserSetupNotifier(),

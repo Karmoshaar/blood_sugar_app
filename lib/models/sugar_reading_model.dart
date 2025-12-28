@@ -8,18 +8,22 @@ class SugarReading {
     required this.type,
     required this.time,
   });
+
   factory SugarReading.fromJson(Map<String, dynamic> json) {
-return SugarReading(
-  value: json['value'],
-  type: json['type'],
-  time: DateTime.parse(json['time']),
-);
+    return SugarReading(
+      value: json['value'] ?? 0, 
+      type: json['type'] ?? 'unknown',
+      time: json['time'] != null 
+          ? DateTime.parse(json['time']) 
+          : DateTime.now(),
+    );
   }
+
   Map<String, dynamic> toJson() {
-return{
-  'value': value,
-  'type': type,
-  'time': time.toIso8601String(),
-};
+    return {
+      'value': value,
+      'type': type,
+      'time': time.toIso8601String(),
+    };
   }
 }
