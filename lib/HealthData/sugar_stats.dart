@@ -4,61 +4,62 @@ import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/sugar_provider.dart';
 import 'package:blood_sugar_app_1/widgets/add_sugar_dialog.dart';
-
 import '../models/sugar_reading_model.dart';
-
-Widget _buildStat(String value, String label) {
-  return Column(
-    children: [
-      Text(
-        value,
-        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      ),
-      const SizedBox(height: 4),
-      Text(label, style: TextStyle(color: Colors.grey[600])),
-    ],
-  );
-}
-
-enum ChartType { bar, line }
+import 'sugar_stats_calculator.dart'; // استيراد الكلاس من الملف الخارجي
 
 class SugarStats extends ConsumerStatefulWidget {
   const SugarStats({super.key});
 
   @override
-  _SugarStatsState createState() => _SugarStatsState();
+  ConsumerState<SugarStats> createState() => _SugarStatsState();
 }
 
 class _SugarStatsState extends ConsumerState<SugarStats> {
+  ChartType _selected = ChartType.bar;
+
+  Widget _buildStat(String value, String label) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 4),
+        Text(label, style: TextStyle(color: Colors.grey[600])),
+      ],
+    );
+  }
+
+  // استخدام SugarStatsCalculator كمعامل
+  Widget _statsRow(SugarStatsCalculator calculator) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        _buildStat(calculator.average.toStringAsFixed(1), "Average"),
+        _buildStat(calculator.maxValue.toString(), "Max"),
+        _buildStat(calculator.minValue.toString(), "Min"),
+      ],
+    );
+  }
+
   Widget _buildBarChart(List<SugarReading> readings) {
-    final displayed = readings.length > 7
-        ? readings.sublist(readings.length - 7)
-        : readings;
-    final maxValue = displayed
-        .map((e) => e.value)
-        .reduce((a, b) => a > b ? a : b)
-        .toDouble();
+    // استخدام المنطق الموجود داخل الـ Calculator
+    final calculator = SugarStatsCalculator(readings);
+    final displayed = calculator.last7Readings;
 
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
-        maxY: maxValue + 20,
-        barTouchData: BarTouchData(enabled: false),
-        titlesData: FlTitlesData(
+        maxY: 250,
+        barTouchData: BarTouchData(enabled: true),
+        titlesData: const FlTitlesData(
           leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
+        gridData: const FlGridData(show: true, drawVerticalLine: false),
         borderData: FlBorderData(show: false),
-        gridData: FlGridData(
-          show: true,
-          drawVerticalLine: false,
-          getDrawingHorizontalLine: (value) {
-            return FlLine(
-              color: Colors.grey.withOpacity(0.1),
-              strokeWidth: 1,
-            );
-          },
-        ),
         barGroups: List.generate(
           displayed.length,
           (i) => BarChartGroupData(
@@ -66,8 +67,8 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
             barRods: [
               BarChartRodData(
                 toY: displayed[i].value.toDouble(),
-                width: 28,
-                borderRadius: BorderRadius.circular(12),
+                width: 18,
+                borderRadius: BorderRadius.circular(10),
                 gradient: LinearGradient(
                   colors: [AppColors.primaryLight, AppColors.primaryDark],
                   begin: Alignment.topCenter,
@@ -81,335 +82,230 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
     );
   }
 
-  Widget _buildLineChart(List<double> weeklyData) {
+  Widget _buildLineChart(List<SugarReading> readings) {
+    final calculator = SugarStatsCalculator(readings);
+    final data = calculator.sortedByTime
+        .map((e) => e.value.toDouble())
+        .toList();
+
     return LineChart(
       LineChartData(
-        gridData: FlGridData(show: false),
+        gridData: const FlGridData(show: false),
         borderData: FlBorderData(show: false),
-        titlesData: FlTitlesData(
+        titlesData: const FlTitlesData(
           leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
         lineBarsData: [
           LineChartBarData(
             spots: List.generate(
-              weeklyData.length,
-              (i) => FlSpot(i.toDouble(), weeklyData[i]),
+              data.length,
+              (i) => FlSpot(i.toDouble(), data[i]),
             ),
             isCurved: true,
             barWidth: 4,
             color: AppColors.primaryDark,
-            dotData: FlDotData(show: true),
+            dotData: const FlDotData(show: true),
           ),
         ],
       ),
     );
   }
-
-  int _selectedTab = 1;
-  ChartType _selected = ChartType.bar;
 
   @override
   Widget build(BuildContext context) {
     final sugarAsync = ref.watch(sugarProvider);
+
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        titleSpacing: 0,
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-        ),
+        automaticallyImplyLeading: false,
       ),
-      body: Column(
-        children: [
-          Stack(
-            clipBehavior: Clip.none,
+      body: sugarAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('Error: $e')),
+        data: (readings) {
+          // إنشاء كائن من الكلاس الخارجي
+          final calculator = SugarStatsCalculator(readings);
+
+          return Column(
             children: [
-              Card(
-                margin: const EdgeInsets.all(16),
-                elevation: 9,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Blood Sugar",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "Lifetime summary",
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          // _buildStat("90.6", "Average"),
-                          // _buildStat("132.5", "Maximum"),
-                          // _buildStat("74.9", "Minimum"),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                top: -2,
-                right: 0,
-                child: Image.asset(
-                  "asset/image/bubble.png",
-                  width: 100,
-                  height: 100,
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // زر Statistics
-                _selected == ChartType.bar
-                    ? ElevatedButton(
-                        onPressed: () =>
-                            setState(() => _selected = ChartType.bar),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            251,
-                            68,
-                            82,
-                          ),
-                          foregroundColor: Colors.white,
-                          minimumSize: const Size(170, 40),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: const Text("Statistics"),
-                      )
-                    : OutlinedButton(
-                        onPressed: () =>
-                            setState(() => _selected = ChartType.bar),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.textPrimary,
-                          side: BorderSide(color: AppColors.border),
-                          minimumSize: const Size(170, 40),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text("Statistics"),
-                      ),
-                const SizedBox(width: 10),
-                // زر History
-                _selected == ChartType.line
-                    ? ElevatedButton(
-                        onPressed: () =>
-                            setState(() => _selected = ChartType.line),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            251,
-                            68,
-                            82,
-                          ),
-                          foregroundColor: Colors.white,
-                          minimumSize: const Size(170, 40),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: const Text("History"),
-                      )
-                    : OutlinedButton(
-                        onPressed: () =>
-                            setState(() => _selected = ChartType.line),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.textPrimary,
-                          side: BorderSide(color: AppColors.border),
-                          minimumSize: const Size(170, 40),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text("History"),
-                      ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Card(
+                    margin: const EdgeInsets.all(16),
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            "Blood sugar(mg/dL)",
+                            "Blood Sugar",
                             style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
                             ),
                           ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Lifetime summary",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          _statsRow(calculator),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: 10,
+                    child: Image.asset(
+                      "asset/image/bubble.png",
+                      width: 80,
+                      height: 80,
+                      errorBuilder: (_, __, ___) => const SizedBox(),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _buildToggleButton("Statistics", ChartType.bar),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildToggleButton("History", ChartType.line),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color: _selected == ChartType.bar
-                                      ? AppColors.primaryDark
-                                      : Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: IconButton(
-                                  onPressed: () =>
-                                      setState(() => _selected = ChartType.bar),
-                                  icon: const Icon(
-                                    Icons.bar_chart,
-                                    color: Colors.grey,
-                                    size: 20,
-                                  ),
-                                ),
+                              const Text(
+                                "Blood sugar (mg/dL)",
+                                style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color: _selected == ChartType.line
-                                      ? AppColors.primaryDark
-                                      : Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: IconButton(
-                                  onPressed: () => setState(
-                                    () => _selected = ChartType.line,
+                              Row(
+                                children: [
+                                  _chartTypeIcon(
+                                    Icons.bar_chart,
+                                    ChartType.bar,
                                   ),
-                                  icon: const Icon(
+                                  const SizedBox(width: 8),
+                                  _chartTypeIcon(
                                     Icons.show_chart,
-                                    color: Colors.grey,
-                                    size: 20,
+                                    ChartType.line,
                                   ),
-                                ),
+                                ],
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.chevron_left),
+                          const SizedBox(height: 24),
+                          Expanded(
+                            child: readings.isEmpty
+                                ? const Center(child: Text("No data available"))
+                                : (_selected == ChartType.bar
+                                      ? _buildBarChart(readings)
+                                      : _buildLineChart(readings)),
                           ),
-                          // const Text(
-                          //   "Dec 16 - Dec 22, 2024",
-                          //   style: TextStyle(
-                          //     fontSize: 14,
-                          //     fontWeight: FontWeight.w500,
-                          //   ),
-                          // ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.chevron_right),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Expanded(
-                        child: sugarAsync.when(
-                          loading: () =>
-                              const Center(child: CircularProgressIndicator()),
-                          error: (e, _) => Center(child: Text('Error: $e')),
-                          data: (readings) {
-                            if (readings.isEmpty) {
-                              return const Center(child: Text('No data yet'));
-                            }
-
-                            return _buildBarChart(readings);
-                          },
-                        ),
-                      ),
-
-                      const SizedBox(height: 10),
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            showDialog(
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () => showDialog(
                               context: context,
-                              builder: (context) => const AddSugarDialog(),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(
-                              255,
-                              251,
-                              68,
-                              82,
+                              builder: (_) => const AddSugarDialog(),
                             ),
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size(170, 40),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryDark,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              minimumSize: const Size(150, 45),
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 0,
-                            alignment: Alignment.bottomCenter,
+                            child: const Text("Add Reading"),
                           ),
-                          child: const Text("add"),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildToggleButton(String title, ChartType type) {
+    bool isSelected = _selected == type;
+    return isSelected
+        ? ElevatedButton(
+            onPressed: () => setState(() => _selected = type),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryDark,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
-          ),
-        ],
+            child: Text(title, style: const TextStyle(color: Colors.white)),
+          )
+        : OutlinedButton(
+            onPressed: () => setState(() => _selected = type),
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: Colors.grey),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(title, style: const TextStyle(color: Colors.black)),
+          );
+  }
+
+  Widget _chartTypeIcon(IconData icon, ChartType type) {
+    return GestureDetector(
+      onTap: () => setState(() => _selected = type),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: _selected == type ? AppColors.primaryDark : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(
+          icon,
+          color: _selected == type ? Colors.white : Colors.grey,
+          size: 20,
+        ),
       ),
     );
   }
 }
+
+enum ChartType { bar, line }
