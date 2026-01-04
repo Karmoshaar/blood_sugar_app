@@ -15,8 +15,9 @@ void main() async {
   // اختبار Dio
   // await testDio();
 
-  // اختبار ApiService
-  // await testApiService();
+  //
+  // This section tests the ApiService by calling testApiService().
+  // It is currently commented out, so the test will not run.
 
   runApp(
     /// The ProviderScope widget allows Riverpod to manage state for its child widgets.

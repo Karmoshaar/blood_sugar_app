@@ -1,3 +1,5 @@
+// /Users/bdalkrymshad/Projects/blood_sugar_app/lib/HealthData/sugar_stats.dart
+
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
@@ -5,7 +7,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/sugar_provider.dart';
 import 'package:blood_sugar_app_1/widgets/add_sugar_dialog.dart';
 import '../models/sugar_reading_model.dart';
-import 'sugar_stats_calculator.dart'; // استيراد الكلاس من الملف الخارجي
+import 'sugar_stats_calculator.dart';
+import 'package:blood_sugar_app_1/widgets/sugar_history_list.dart';
+
+// تحديث الـ Enum ليشمل 3 حالات
+enum ChartType { bar, line, history }
 
 class SugarStats extends ConsumerStatefulWidget {
   const SugarStats({super.key});
@@ -15,38 +21,13 @@ class SugarStats extends ConsumerStatefulWidget {
 }
 
 class _SugarStatsState extends ConsumerState<SugarStats> {
+  // الحالة الافتراضية
   ChartType _selected = ChartType.bar;
 
-  Widget _buildStat(String value, String label) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 4),
-        Text(label, style: TextStyle(color: Colors.grey[600])),
-      ],
-    );
-  }
+  // --- الرسوم البيانية ---
 
-  // استخدام SugarStatsCalculator كمعامل
-  Widget _statsRow(SugarStatsCalculator calculator) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        _buildStat(calculator.average.toStringAsFixed(1), "Average"),
-        _buildStat(calculator.maxValue.toString(), "Max"),
-        _buildStat(calculator.minValue.toString(), "Min"),
-      ],
-    );
-  }
-
-  Widget _buildBarChart(List<SugarReading> readings) {
-    // استخدام المنطق الموجود داخل الـ Calculator
-    final calculator = SugarStatsCalculator(readings);
+  Widget _buildBarChart(SugarStatsCalculator calculator) {
     final displayed = calculator.last7Readings;
-
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
@@ -62,7 +43,7 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
         borderData: FlBorderData(show: false),
         barGroups: List.generate(
           displayed.length,
-          (i) => BarChartGroupData(
+              (i) => BarChartGroupData(
             x: i,
             barRods: [
               BarChartRodData(
@@ -82,30 +63,36 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
     );
   }
 
-  Widget _buildLineChart(List<SugarReading> readings) {
-    final calculator = SugarStatsCalculator(readings);
-    final data = calculator.sortedByTime
-        .map((e) => e.value.toDouble())
-        .toList();
-
+  Widget _buildLineChart(SugarStatsCalculator calculator) {
+    final sorted = calculator.sortedByTime;
     return LineChart(
       LineChartData(
-        gridData: const FlGridData(show: false),
+        gridData: const FlGridData(show: true, drawVerticalLine: false),
         borderData: FlBorderData(show: false),
         titlesData: const FlTitlesData(
           leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
         lineBarsData: [
           LineChartBarData(
             spots: List.generate(
-              data.length,
-              (i) => FlSpot(i.toDouble(), data[i]),
+              sorted.length,
+                  (i) => FlSpot(i.toDouble(), sorted[i].value.toDouble()),
             ),
             isCurved: true,
             barWidth: 4,
             color: AppColors.primaryDark,
             dotData: const FlDotData(show: true),
+            belowBarData: BarAreaData(
+              show: true,
+              gradient: LinearGradient(
+                colors: [AppColors.primaryLight.withOpacity(0.3), Colors.transparent],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
           ),
         ],
       ),
@@ -115,6 +102,9 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
   @override
   Widget build(BuildContext context) {
     final sugarAsync = ref.watch(sugarProvider);
+    final readings = sugarAsync.value ?? [];
+    final calculator = SugarStatsCalculator(readings);
+    final sorted = calculator.sortedByTime;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -123,170 +113,175 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
         elevation: 0,
         automaticallyImplyLeading: false,
       ),
-      body: sugarAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
-        data: (readings) {
-          // إنشاء كائن من الكلاس الخارجي
-          final calculator = SugarStatsCalculator(readings);
+      body: Column(
+        children: [
+          _buildSummaryCard(calculator),
 
-          return Column(
-            children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Card(
-                    margin: const EdgeInsets.all(16),
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Blood Sugar",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            "Lifetime summary",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          _statsRow(calculator),
-                        ],
-                      ),
-                    ),
+          // أزرار التبديل العلوية (Statistics vs History)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildMainToggleButton(
+                    "Statistics",
+                    isActive: _selected == ChartType.bar || _selected == ChartType.line,
+                    onTap: () => setState(() => _selected = ChartType.bar),
                   ),
-                  Positioned(
-                    top: 0,
-                    right: 10,
-                    child: Image.asset(
-                      "asset/image/bubble.png",
-                      width: 80,
-                      height: 80,
-                      errorBuilder: (_, __, ___) => const SizedBox(),
-                    ),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _buildToggleButton("Statistics", ChartType.bar),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildToggleButton("History", ChartType.line),
-                    ),
-                  ],
                 ),
-              ),
-              Expanded(
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildMainToggleButton(
+                    "History",
+                    isActive: _selected == ChartType.history,
+                    onTap: () => setState(() => _selected = ChartType.history),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "Blood sugar (mg/dL)",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Row(
-                                children: [
-                                  _chartTypeIcon(
-                                    Icons.bar_chart,
-                                    ChartType.bar,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  _chartTypeIcon(
-                                    Icons.show_chart,
-                                    ChartType.line,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 24),
-                          Expanded(
-                            child: readings.isEmpty
-                                ? const Center(child: Text("No data available"))
-                                : (_selected == ChartType.bar
-                                      ? _buildBarChart(readings)
-                                      : _buildLineChart(readings)),
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () => showDialog(
-                              context: context,
-                              builder: (_) => const AddSugarDialog(),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primaryDark,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              minimumSize: const Size(150, 45),
-                            ),
-                            child: const Text("Add Reading"),
-                          ),
-                        ],
+                  child: Column(
+                    children: [
+                      _buildHeaderIcons(),
+                      const SizedBox(height: 24),
+                      Expanded(
+                        child: readings.isEmpty && sugarAsync.isLoading
+                            ? const Center(child: CircularProgressIndicator())
+                            : readings.isEmpty
+                            ? const Center(child: Text("No data available"))
+                            : _buildMainContent(calculator, sorted),
                       ),
-                    ),
+                      const SizedBox(height: 16),
+                      _buildAddButton(),
+                    ],
                   ),
                 ),
               ),
-            ],
-          );
-        },
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildToggleButton(String title, ChartType type) {
-    bool isSelected = _selected == type;
-    return isSelected
+  // اختيار المحتوى بناءً على الحالة
+  Widget _buildMainContent(SugarStatsCalculator calculator, List<SugarReading> sorted) {
+    switch (_selected) {
+      case ChartType.bar:
+        return _buildBarChart(calculator);
+      case ChartType.line:
+        return _buildLineChart(calculator);
+      case ChartType.history:
+        return SugarHistoryList(readings: sorted);
+    }
+  }
+
+  Widget _buildMainToggleButton(String title, {required bool isActive, required VoidCallback onTap}) {
+    return isActive
         ? ElevatedButton(
-            onPressed: () => setState(() => _selected = type),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryDark,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Text(title, style: const TextStyle(color: Colors.white)),
-          )
+      onPressed: onTap,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primaryDark,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      child: Text(title, style: const TextStyle(color: Colors.white)),
+    )
         : OutlinedButton(
-            onPressed: () => setState(() => _selected = type),
-            style: OutlinedButton.styleFrom(
-              side: const BorderSide(color: Colors.grey),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+      onPressed: onTap,
+      style: OutlinedButton.styleFrom(
+        side: const BorderSide(color: Colors.grey),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      child: Text(title, style: const TextStyle(color: Colors.black)),
+    );
+  }
+
+  Widget _buildHeaderIcons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Text("Blood sugar (mg/dL)", style: TextStyle(fontWeight: FontWeight.bold)),
+        // أيقونات تبديل نوع الرسم البياني
+        Row(
+          children: [
+            _chartTypeIcon(Icons.bar_chart, ChartType.bar),
+            const SizedBox(width: 8),
+            _chartTypeIcon(Icons.show_chart, ChartType.line),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // --- الدوال الأخرى (SummaryCard, Stat, AddButton, ChartTypeIcon) تبقى كما هي مع تغيير بسيط في الـ Icon logic ---
+
+  Widget _buildSummaryCard(SugarStatsCalculator calculator) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Card(
+          margin: const EdgeInsets.all(16),
+          elevation: 5,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Blood Sugar", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
+                const SizedBox(height: 4),
+                Text("Lifetime summary", style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildStat(calculator.average.toStringAsFixed(1), "Average"),
+                    _buildStat(calculator.maxValue.toString(), "Max"),
+                    _buildStat(calculator.minValue.toString(), "Min"),
+                  ],
+                ),
+              ],
             ),
-            child: Text(title, style: const TextStyle(color: Colors.black)),
-          );
+          ),
+        ),
+        Positioned(
+          top: 0, right: 10,
+          child: Image.asset("asset/image/bubble.png", width: 80, height: 80, errorBuilder: (_, __, ___) => const SizedBox()),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStat(String value, String label) {
+    return Column(
+      children: [
+        Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 4),
+        Text(label, style: TextStyle(color: Colors.grey[600])),
+      ],
+    );
+  }
+
+  Widget _buildAddButton() {
+    return ElevatedButton(
+      onPressed: () => showDialog(context: context, builder: (_) => const AddSugarDialog()),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primaryDark,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        minimumSize: const Size(150, 45),
+      ),
+      child: const Text("Add Reading"),
+    );
   }
 
   Widget _chartTypeIcon(IconData icon, ChartType type) {
@@ -298,14 +293,8 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
           color: _selected == type ? AppColors.primaryDark : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(
-          icon,
-          color: _selected == type ? Colors.white : Colors.grey,
-          size: 20,
-        ),
+        child: Icon(icon, color: _selected == type ? Colors.white : Colors.grey, size: 20),
       ),
     );
   }
 }
-
-enum ChartType { bar, line }

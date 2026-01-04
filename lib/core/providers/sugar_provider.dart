@@ -1,3 +1,4 @@
+import 'package:flutter/scheduler.dart';
 import 'package:blood_sugar_app_1/models/sugar_reading_model.dart';
 import 'package:blood_sugar_app_1/services/api_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,19 +17,30 @@ class SugarNotifier extends AsyncNotifier<List<SugarReading>> {
     return await api.getSugarReadings();
   }
 
-  Future<void> addReading(SugarReading reading) async {
-    // استخدام value بدلاً من valueOrNull في الإصدارات الأقدم من Riverpod
-    // أو التأكد من استخراج البيانات بشكل صحيح
+  void addReading(SugarReading reading) {
     final previousState = state.value ?? [];
 
+    // Use postFrameCallback to defer state update slightly
+    // This allows the dialog to close first before triggering rebuild
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      // Optimistic update: update UI after frame
+      state = AsyncData([...previousState, reading]);
+      
+      // Fire-and-forget API call in the background
+      _saveReadingToServer(reading, previousState);
+    });
+  }
+
+  Future<void> _saveReadingToServer(SugarReading reading, List<SugarReading> previousState) async {
     try {
       final api = ref.read(apiServiceProvider);
       await api.postSugarReading(reading);
-
-      // التحديث المحلي
-      state = AsyncData([...previousState, reading]);
-    } catch (e, st) {
-      state = AsyncError(e, st);
+    } catch (e) {
+      // Revert optimistic update on error
+      final currentState = state.value ?? [];
+      if (currentState.length > previousState.length) {
+        state = AsyncData(previousState);
+      }
     }
   }
 }

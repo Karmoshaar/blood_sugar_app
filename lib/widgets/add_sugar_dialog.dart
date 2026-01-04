@@ -12,7 +12,6 @@ class AddSugarDialog extends ConsumerStatefulWidget {
 
 class _AddSugarDialogState extends ConsumerState<AddSugarDialog> {
   final TextEditingController _controller = TextEditingController();
-  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,28 +26,20 @@ class _AddSugarDialogState extends ConsumerState<AddSugarDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _isLoading
-              ? null
-              : () {
+          onPressed: () {
             Navigator.pop(context);
           },
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: _isLoading ? null : _submit,
-          child: _isLoading
-              ? const SizedBox(
-            height: 16,
-            width: 16,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          )
-              : const Text('Save'),
+          onPressed: _submit,
+          child: const Text('Save'),
         ),
       ],
     );
   }
 
-  Future<void> _submit() async {
+  void _submit() {
     final valueStr = _controller.text;
     final value = int.tryParse(valueStr);
 
@@ -59,31 +50,16 @@ class _AddSugarDialogState extends ConsumerState<AddSugarDialog> {
       return;
     }
 
-    setState(() => _isLoading = true);
+    final reading = SugarReading(
+      value: value,
+      type: 'Random',
+      time: DateTime.now(),
+    );
 
-    try {
-      final reading = SugarReading(
-        value: value,
-        type: 'Random', // يمكنك تغيير النوع حسب الحاجة
-        time: DateTime.now(),
-      );
-
-      // استدعاء الـ provider لإضافة البيانات
-      await ref.read(sugarProvider.notifier).addReading(reading);
-
-      if (mounted) {
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
+    // Add reading optimistically (updates UI immediately, API call happens in background)
+    ref.read(sugarProvider.notifier).addReading(reading);
+    
+    // Close dialog immediately - no waiting
+    Navigator.pop(context);
   }
 }
