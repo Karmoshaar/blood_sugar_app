@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/sugar_reading_model.dart';
+import 'package:blood_sugar_app_1/widgets/sugar_item_history.dart';
 
 class SugarHistoryList extends StatelessWidget {
   final List<SugarReading> readings;
@@ -13,29 +14,9 @@ class SugarHistoryList extends StatelessWidget {
       itemCount: readings.length,
       itemBuilder: (context, index) {
         final r = readings[readings.length - 1 - index];
-
-        return Card(
-          elevation: 2,
-          margin: const EdgeInsets.symmetric(vertical: 6),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: ListTile(
-            leading: const CircleAvatar(
-              backgroundColor: Color(0xFFFB4452),
-              child: Icon(Icons.bloodtype, color: Colors.white),
-            ),
-            title: Text(
-              "${r.value} mg/dL",
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(
-              "${r.time.day}/${r.time.month}/${r.time.year} - ${r.time.hour}:${r.time.minute}",
-            ),
-            trailing: const Icon(Icons.chevron_right),
-          ),
-        );
+        return SugarHistoryItem(reading: r);
       },
     );
   }
 }
+

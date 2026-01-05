@@ -6,21 +6,19 @@ import '../../models/sugar_reading_model.dart';
 
 class SugarHistoryItem extends StatelessWidget {
   final SugarReading reading;
+
   String formatDate(DateTime date) {
     final now = DateTime.now();
 
     final isToday =
-        date.year == now.year &&
-            date.month == now.month &&
-            date.day == now.day;
+        date.year == now.year && date.month == now.month && date.day == now.day;
 
     final isYesterday =
         date.year == now.year &&
-            date.month == now.month &&
-            date.day == now.day - 1;
+        date.month == now.month &&
+        date.day == now.day - 1;
 
-    final time =
-        "${date.hour}:${date.minute.toString().padLeft(2, '0')}";
+    final time = "${date.hour}:${date.minute.toString().padLeft(2, '0')}";
 
     if (isToday) {
       return "Today • $time";
@@ -30,10 +28,8 @@ class SugarHistoryItem extends StatelessWidget {
       return "${date.day}/${date.month}/${date.year} • $time";
     }
   }
-  const SugarHistoryItem({
-    super.key,
-    required this.reading,
-  });
+
+  const SugarHistoryItem({super.key, required this.reading});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +45,6 @@ class SugarHistoryItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Left
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -70,10 +65,7 @@ class SugarHistoryItem extends StatelessWidget {
 
           // Status pill
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 6,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: status.color,
               borderRadius: BorderRadius.circular(20),
@@ -85,7 +77,7 @@ class SugarHistoryItem extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-          )
+          ),
         ],
       ),
     );
