@@ -1,5 +1,3 @@
-// /Users/bdalkrymshad/Projects/blood_sugar_app/lib/HealthData/sugar_stats.dart
-
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
@@ -10,7 +8,6 @@ import '../models/sugar_reading_model.dart';
 import 'sugar_stats_calculator.dart';
 import 'package:blood_sugar_app_1/widgets/sugar_history_list.dart';
 
-// تحديث الـ Enum ليشمل 3 حالات
 enum ChartType { bar, line, history }
 
 class SugarStats extends ConsumerStatefulWidget {
@@ -43,7 +40,7 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
         borderData: FlBorderData(show: false),
         barGroups: List.generate(
           displayed.length,
-              (i) => BarChartGroupData(
+          (i) => BarChartGroupData(
             x: i,
             barRods: [
               BarChartRodData(
@@ -79,7 +76,7 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
           LineChartBarData(
             spots: List.generate(
               sorted.length,
-                  (i) => FlSpot(i.toDouble(), sorted[i].value.toDouble()),
+              (i) => FlSpot(i.toDouble(), sorted[i].value.toDouble()),
             ),
             isCurved: true,
             barWidth: 4,
@@ -88,7 +85,10 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
             belowBarData: BarAreaData(
               show: true,
               gradient: LinearGradient(
-                colors: [AppColors.primaryLight.withOpacity(0.3), Colors.transparent],
+                colors: [
+                  AppColors.primaryLight.withOpacity(0.3),
+                  Colors.transparent,
+                ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
@@ -117,7 +117,6 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
         children: [
           _buildSummaryCard(calculator),
 
-          // أزرار التبديل العلوية (Statistics vs History)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -125,7 +124,9 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
                 Expanded(
                   child: _buildMainToggleButton(
                     "Statistics",
-                    isActive: _selected == ChartType.bar || _selected == ChartType.line,
+                    isActive:
+                        _selected == ChartType.bar ||
+                        _selected == ChartType.line,
                     onTap: () => setState(() => _selected = ChartType.bar),
                   ),
                 ),
@@ -146,7 +147,9 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
               padding: const EdgeInsets.all(16),
               child: Card(
                 elevation: 2,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -173,8 +176,10 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
     );
   }
 
-  // اختيار المحتوى بناءً على الحالة
-  Widget _buildMainContent(SugarStatsCalculator calculator, List<SugarReading> sorted) {
+  Widget _buildMainContent(
+    SugarStatsCalculator calculator,
+    List<SugarReading> sorted,
+  ) {
     switch (_selected) {
       case ChartType.bar:
         return _buildBarChart(calculator);
@@ -185,32 +190,43 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
     }
   }
 
-  Widget _buildMainToggleButton(String title, {required bool isActive, required VoidCallback onTap}) {
+  Widget _buildMainToggleButton(
+    String title, {
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
     return isActive
         ? ElevatedButton(
-      onPressed: onTap,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primaryDark,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      child: Text(title, style: const TextStyle(color: Colors.white)),
-    )
+            onPressed: onTap,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryDark,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(title, style: const TextStyle(color: Colors.white)),
+          )
         : OutlinedButton(
-      onPressed: onTap,
-      style: OutlinedButton.styleFrom(
-        side: const BorderSide(color: Colors.grey),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      child: Text(title, style: const TextStyle(color: Colors.black)),
-    );
+            onPressed: onTap,
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: Colors.grey),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(title, style: const TextStyle(color: Colors.black)),
+          );
   }
 
   Widget _buildHeaderIcons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text("Blood sugar (mg/dL)", style: TextStyle(fontWeight: FontWeight.bold)),
-        // أيقونات تبديل نوع الرسم البياني
+        const Text(
+          "Blood sugar (mg/dL)",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+
         Row(
           children: [
             _chartTypeIcon(Icons.bar_chart, ChartType.bar),
@@ -222,8 +238,6 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
     );
   }
 
-  // --- الدوال الأخرى (SummaryCard, Stat, AddButton, ChartTypeIcon) تبقى كما هي مع تغيير بسيط في الـ Icon logic ---
-
   Widget _buildSummaryCard(SugarStatsCalculator calculator) {
     return Stack(
       clipBehavior: Clip.none,
@@ -231,20 +245,31 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
         Card(
           margin: const EdgeInsets.all(16),
           elevation: 5,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Blood Sugar", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
+                const Text(
+                  "Blood Sugar",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                ),
                 const SizedBox(height: 4),
-                Text("Lifetime summary", style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                Text(
+                  "Lifetime summary",
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                ),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildStat(calculator.average.toStringAsFixed(1), "Average"),
+                    _buildStat(
+                      calculator.average.toStringAsFixed(1),
+                      "Average",
+                    ),
                     _buildStat(calculator.maxValue.toString(), "Max"),
                     _buildStat(calculator.minValue.toString(), "Min"),
                   ],
@@ -254,8 +279,14 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
           ),
         ),
         Positioned(
-          top: 0, right: 10,
-          child: Image.asset("asset/image/bubble.png", width: 80, height: 80, errorBuilder: (_, __, ___) => const SizedBox()),
+          top: 0,
+          right: 10,
+          child: Image.asset(
+            "asset/image/bubble.png",
+            width: 80,
+            height: 80,
+            errorBuilder: (_, __, ___) => const SizedBox(),
+          ),
         ),
       ],
     );
@@ -264,7 +295,10 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
   Widget _buildStat(String value, String label) {
     return Column(
       children: [
-        Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 4),
         Text(label, style: TextStyle(color: Colors.grey[600])),
       ],
@@ -273,7 +307,8 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
 
   Widget _buildAddButton() {
     return ElevatedButton(
-      onPressed: () => showDialog(context: context, builder: (_) => const AddSugarDialog()),
+      onPressed: () =>
+          showDialog(context: context, builder: (_) => const AddSugarDialog()),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primaryDark,
         foregroundColor: Colors.white,
@@ -293,7 +328,11 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
           color: _selected == type ? AppColors.primaryDark : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, color: _selected == type ? Colors.white : Colors.grey, size: 20),
+        child: Icon(
+          icon,
+          color: _selected == type ? Colors.white : Colors.grey,
+          size: 20,
+        ),
       ),
     );
   }

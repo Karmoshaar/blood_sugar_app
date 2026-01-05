@@ -8,18 +8,18 @@ class SugarHistoryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // تم تغيير ListView إلى ListView.builder مع وضع أبعاد محددة أو استخدام Expanded
     return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: readings.length,
       itemBuilder: (context, index) {
-        // ترتيب تنازلي (الأحدث أولاً)
         final r = readings[readings.length - 1 - index];
 
         return Card(
           elevation: 2,
           margin: const EdgeInsets.symmetric(vertical: 6),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: ListTile(
             leading: const CircleAvatar(
               backgroundColor: Color(0xFFFB4452),
