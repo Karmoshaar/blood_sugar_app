@@ -7,7 +7,7 @@ import 'package:blood_sugar_app_1/widgets/add_sugar_dialog.dart';
 import '../models/sugar_reading_model.dart';
 import 'sugar_stats_calculator.dart';
 import 'package:blood_sugar_app_1/widgets/sugar_history_list.dart';
-
+import 'package:blood_sugar_app_1/settings/settings_page.dart';
 enum ChartType { bar, line, history }
 
 class SugarStats extends ConsumerStatefulWidget {
@@ -112,6 +112,23 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
         backgroundColor: AppColors.background,
         elevation: 0,
         automaticallyImplyLeading: false,
+        title: const Text(
+          'Blood Sugar',
+          style: TextStyle(color: Colors.black),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings, color: Colors.black),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SettingsPage(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [

@@ -28,6 +28,7 @@ class _GenderSetupState extends ConsumerState<GenderSetup> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     final userState = ref.watch(userSetupProvider);
     return Scaffold(

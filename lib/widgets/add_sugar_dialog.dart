@@ -20,9 +20,7 @@ class _AddSugarDialogState extends ConsumerState<AddSugarDialog> {
       content: TextField(
         controller: _controller,
         keyboardType: TextInputType.number,
-        decoration: const InputDecoration(
-          labelText: 'Blood sugar (mg/dL)',
-        ),
+        decoration: const InputDecoration(labelText: 'Blood sugar (mg/dL)'),
       ),
       actions: [
         TextButton(
@@ -31,10 +29,7 @@ class _AddSugarDialogState extends ConsumerState<AddSugarDialog> {
           },
           child: const Text('Cancel'),
         ),
-        ElevatedButton(
-          onPressed: _submit,
-          child: const Text('Save'),
-        ),
+        ElevatedButton(onPressed: _submit, child: const Text('Save')),
       ],
     );
   }
@@ -58,7 +53,7 @@ class _AddSugarDialogState extends ConsumerState<AddSugarDialog> {
 
     // Add reading optimistically (updates UI immediately, API call happens in background)
     ref.read(sugarProvider.notifier).addReading(reading);
-    
+
     // Close dialog immediately - no waiting
     Navigator.pop(context);
   }

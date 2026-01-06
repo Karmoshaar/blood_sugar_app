@@ -3,7 +3,7 @@ class SugarReading {
   final String type;
   final DateTime time;
 
-  SugarReading({
+  const SugarReading({
     required this.value,
     required this.type,
     required this.time,
@@ -11,10 +11,10 @@ class SugarReading {
 
   factory SugarReading.fromJson(Map<String, dynamic> json) {
     return SugarReading(
-      value: json['value'] ?? 0, 
-      type: json['type'] ?? 'unknown',
-      time: json['time'] != null 
-          ? DateTime.parse(json['time']) 
+      value: (json['value'] as num?)?.toInt() ?? 0,
+      type: json['type'] as String? ?? 'unknown',
+      time: json['time'] != null
+          ? DateTime.parse(json['time'] as String)
           : DateTime.now(),
     );
   }

@@ -7,6 +7,8 @@ import 'package:blood_sugar_app_1/AccountSetup/sign_up_screen.dart';
 import 'package:blood_sugar_app_1/AccountSetup/account_setup.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 class SplashMain extends StatefulWidget {
+  const SplashMain({super.key});
+
   @override
   _SplashMainState createState() => _SplashMainState();
 }

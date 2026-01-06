@@ -44,7 +44,7 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
 
   String get _displayText {
     if (_isCm) return '$_cm cm';
-    return "${_feet}'${_inches}\"";
+    return "$_feet'$_inches\"";
   }
 
   void _updateFeetInches() {
