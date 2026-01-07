@@ -9,6 +9,180 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  void _showMaxSugarDialog() {
+    double tempValue = maxTarget;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Maximum Blood Sugar'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${tempValue.toInt()} mg/dL',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Slider(
+                    min: 100,
+                    max: 300,
+                    divisions: 200,
+                    value: tempValue,
+                    onChanged: (value) {
+                      setDialogState(() {
+                        tempValue = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setDouble('maxTarget', tempValue);
+
+                    setState(() {
+                      maxTarget = tempValue;
+                    });
+
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showMinSugarDialog() {
+    double tempValue = minTarget;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Minimum Blood Sugar'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${tempValue.toInt()} mg/dL',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Slider(
+                    min: 50,
+                    max: 150,
+                    divisions: 100,
+                    value: tempValue,
+                    onChanged: (value) {
+                      setDialogState(() {
+                        tempValue = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setDouble('minTarget', tempValue);
+
+                    setState(() {
+                      minTarget = tempValue;
+                    });
+
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+  void _showTargetDialog({
+    required String title,
+    required double value,
+    required ValueChanged<double> onChanged,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        double tempValue = value;
+
+        return AlertDialog(
+          title: Text(title),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    tempValue.toInt().toString(),
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Slider(
+                    value: tempValue,
+                    min: 50,
+                    max: 250,
+                    divisions: 200,
+                    label: tempValue.toInt().toString(),
+                    onChanged: (v) {
+                      setState(() => tempValue = v);
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                onChanged(tempValue);
+                Navigator.pop(context);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   double minTarget = 70;
   double maxTarget = 140;
   @override
@@ -55,13 +229,39 @@ class _SettingsPageState extends State<SettingsPage> {
           _settingsTile(
             icon: Icons.trending_down,
             title: 'Minimum Sugar',
-            subtitle: 'Set minimum target',
+            subtitle: '${minTarget.toInt()} mg/dL',
+            onTap: () {
+              _showTargetDialog(
+                title: 'Minimum Sugar',
+                value: minTarget,
+                onChanged: (v) async {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setDouble('minTarget', v);
+                  setState(() => minTarget = v);
+                },
+              );
+            },
           ),
+
+
           _settingsTile(
             icon: Icons.trending_up,
             title: 'Maximum Sugar',
-            subtitle: 'Set maximum target',
+            subtitle: '${maxTarget.toInt()} mg/dL',
+            onTap: () {
+              _showTargetDialog(
+                title: 'Maximum Sugar',
+                value: maxTarget,
+                onChanged: (v) async {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setDouble('maxTarget', v);
+                  setState(() => maxTarget = v);
+                },
+              );
+            },
           ),
+
+
 
           const SizedBox(height: 24),
 
@@ -90,7 +290,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  // عنوان القسم
+
   Widget _sectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -105,6 +305,7 @@ class _SettingsPageState extends State<SettingsPage> {
     required IconData icon,
     required String title,
     required String subtitle,
+    VoidCallback? onTap,
   }) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -113,8 +314,10 @@ class _SettingsPageState extends State<SettingsPage> {
         title: Text(title),
         subtitle: Text(subtitle),
         trailing: const Icon(Icons.chevron_right),
-        onTap: () {},
+        onTap: onTap,
       ),
     );
   }
+
+
 }

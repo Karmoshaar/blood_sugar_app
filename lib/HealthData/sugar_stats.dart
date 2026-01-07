@@ -8,6 +8,7 @@ import '../models/sugar_reading_model.dart';
 import 'sugar_stats_calculator.dart';
 import 'package:blood_sugar_app_1/widgets/sugar_history_list.dart';
 import 'package:blood_sugar_app_1/settings/settings_page.dart';
+
 enum ChartType { bar, line, history }
 
 class SugarStats extends ConsumerStatefulWidget {
@@ -20,6 +21,8 @@ class SugarStats extends ConsumerStatefulWidget {
 class _SugarStatsState extends ConsumerState<SugarStats> {
   // الحالة الافتراضية
   ChartType _selected = ChartType.bar;
+  double minTarget = 70;
+  double maxTarget = 140;
 
   // --- الرسوم البيانية ---
 
@@ -112,19 +115,14 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
         backgroundColor: AppColors.background,
         elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text(
-          'Blood Sugar',
-          style: TextStyle(color: Colors.black),
-        ),
+        title: const Text('Blood Sugar', style: TextStyle(color: Colors.black)),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.black),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const SettingsPage(),
-                ),
+                MaterialPageRoute(builder: (_) => const SettingsPage()),
               );
             },
           ),
@@ -203,7 +201,11 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
       case ChartType.line:
         return _buildLineChart(calculator);
       case ChartType.history:
-        return SugarHistoryList(readings: sorted);
+        return SugarHistoryList(
+          readings: sorted,
+          minTarget: minTarget,
+          maxTarget: maxTarget,
+        );
     }
   }
 

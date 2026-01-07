@@ -5,6 +5,8 @@ import '../../../core/utils/date_formatter.dart';
 import '../../models/sugar_reading_model.dart';
 
 class SugarHistoryItem extends StatelessWidget {
+  final double minTarget;
+  final double maxTarget;
   final SugarReading reading;
 
   String formatDate(DateTime date) {
@@ -29,11 +31,20 @@ class SugarHistoryItem extends StatelessWidget {
     }
   }
 
-  const SugarHistoryItem({super.key, required this.reading});
+  const SugarHistoryItem({
+    super.key,
+    required this.reading,
+    required this.minTarget,
+    required this.maxTarget,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final status = BloodLevelAnalyzer.getLevel(reading.value);
+    final status = BloodLevelAnalyzer.getLevel(
+      value: reading.value,
+      minTarget: minTarget,
+      maxTarget: maxTarget,
+    );
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
