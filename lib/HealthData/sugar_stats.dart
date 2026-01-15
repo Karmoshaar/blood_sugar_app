@@ -8,6 +8,7 @@ import '../models/sugar_reading_model.dart';
 import 'sugar_stats_calculator.dart';
 import 'package:blood_sugar_app_1/widgets/sugar_history_list.dart';
 import 'package:blood_sugar_app_1/settings/settings_page.dart';
+import 'package:blood_sugar_app_1/settings/settings_storage.dart';
 
 enum ChartType { bar, line, history }
 
@@ -19,10 +20,30 @@ class SugarStats extends ConsumerStatefulWidget {
 }
 
 class _SugarStatsState extends ConsumerState<SugarStats> {
-  // الحالة الافتراضية
   ChartType _selected = ChartType.bar;
+
   double minTarget = 70;
   double maxTarget = 140;
+
+  @override
+  void initState() {
+    super.initState();
+    loadTargets();
+  }
+
+  Future<void> loadTargets() async {
+    final min = await SettingsStorage.getMinSugar();
+    final max = await SettingsStorage.getMaxSugar();
+
+    if (!mounted) return;
+
+    setState(() {
+      minTarget = min.toDouble();
+      maxTarget = max.toDouble();
+    });
+
+    debugPrint("🔁 Reload Targets → min: $minTarget | max: $maxTarget");
+  }
 
   // --- الرسوم البيانية ---
 
@@ -118,12 +139,15 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
         title: const Text('Blood Sugar', style: TextStyle(color: Colors.black)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings, color: Colors.black),
-            onPressed: () {
-              Navigator.push(
+            icon: const Icon(Icons.settings),
+            onPressed: () async {
+              await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const SettingsPage()),
               );
+
+              // 🔥 لما يرجع من Settings
+              await loadTargets();
             },
           ),
         ],

@@ -2,7 +2,7 @@ import 'blood_level_type.dart';
 
 class BloodLevelAnalyzer {
   static BloodLevelType getLevel({
-    required int value,
+    required double value,
     required double minTarget,
     required double maxTarget,
   }) {
@@ -15,3 +15,4 @@ class BloodLevelAnalyzer {
     }
   }
 }
+

@@ -5,9 +5,10 @@ import '../../../core/utils/date_formatter.dart';
 import '../../models/sugar_reading_model.dart';
 
 class SugarHistoryItem extends StatelessWidget {
+  final SugarReading reading;
   final double minTarget;
   final double maxTarget;
-  final SugarReading reading;
+
 
   String formatDate(DateTime date) {
     final now = DateTime.now();
@@ -41,7 +42,7 @@ class SugarHistoryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = BloodLevelAnalyzer.getLevel(
-      value: reading.value,
+      value: reading.value.toDouble(),
       minTarget: minTarget,
       maxTarget: maxTarget,
     );
