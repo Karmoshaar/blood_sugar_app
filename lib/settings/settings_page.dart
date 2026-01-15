@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../helpers/settings_dialogs.dart';
+import '../helpers/target_dialog.dart';
+import '../helpers/number_input_dialog.dart';
+import '../helpers/weight_dialog.dart';
+import '../helpers/units_dialog.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -9,197 +14,53 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  void _showMaxSugarDialog() {
-    double tempValue = maxTarget;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text('Maximum Blood Sugar'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${tempValue.toInt()} mg/dL',
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Slider(
-                    min: 100,
-                    max: 300,
-                    divisions: 200,
-                    value: tempValue,
-                    onChanged: (value) {
-                      setDialogState(() {
-                        tempValue = value;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    final prefs = await SharedPreferences.getInstance();
-                    await prefs.setDouble('maxTarget', tempValue);
-
-                    setState(() {
-                      maxTarget = tempValue;
-                    });
-
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Save'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _showMinSugarDialog() {
-    double tempValue = minTarget;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text('Minimum Blood Sugar'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${tempValue.toInt()} mg/dL',
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Slider(
-                    min: 50,
-                    max: 150,
-                    divisions: 100,
-                    value: tempValue,
-                    onChanged: (value) {
-                      setDialogState(() {
-                        tempValue = value;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    final prefs = await SharedPreferences.getInstance();
-                    await prefs.setDouble('minTarget', tempValue);
-
-                    setState(() {
-                      minTarget = tempValue;
-                    });
-
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Save'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-  void _showTargetDialog({
-    required String title,
-    required double value,
-    required ValueChanged<double> onChanged,
-  }) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        double tempValue = value;
-
-        return AlertDialog(
-          title: Text(title),
-          content: StatefulBuilder(
-            builder: (context, setState) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    tempValue.toInt().toString(),
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Slider(
-                    value: tempValue,
-                    min: 50,
-                    max: 250,
-                    divisions: 200,
-                    label: tempValue.toInt().toString(),
-                    onChanged: (v) {
-                      setState(() => tempValue = v);
-                    },
-                  ),
-                ],
-              );
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                onChanged(tempValue);
-                Navigator.pop(context);
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-
+  String userName = 'Guest';
   double minTarget = 70;
   double maxTarget = 140;
+  int age = 22;
+  TimeOfDay? reminderTime;
+  double weight = 70;
+  String units = 'mg/dL';
+
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _loadSettings();
   }
+
   void _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
 
     setState(() {
       minTarget = prefs.getDouble('minTarget') ?? 70;
       maxTarget = prefs.getDouble('maxTarget') ?? 140;
+      userName = prefs.getString('userName') ?? 'Guest';
+      weight = prefs.getDouble('weight') ?? 70;
+      units = prefs.getString('units') ?? 'mg/dL';
+      final hour = prefs.getInt('reminderHour');
+      final minute = prefs.getInt('reminderMinute');
+      if (hour != null && minute != null) {
+        reminderTime = TimeOfDay(hour: hour, minute: minute);
+      }
     });
   }
 
+  Future<void> _pickReminderTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: reminderTime ?? TimeOfDay.now(),
+    );
 
+    if (picked != null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('reminderHour', picked.hour);
+      await prefs.setInt('reminderMinute', picked.minute);
+
+      setState(() => reminderTime = picked);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
@@ -210,17 +71,48 @@ class _SettingsPageState extends State<SettingsPage> {
           _settingsTile(
             icon: Icons.person,
             title: 'Name',
-            subtitle: 'Edit your name',
+            subtitle: userName,
+            onTap: () async {
+              final result = await showNameDialog(context, userName);
+              if (result != null) {
+                setState(() => userName = result);
+              }
+            },
           ),
+
           _settingsTile(
             icon: Icons.cake,
             title: 'Age',
-            subtitle: 'Edit your age',
+            subtitle: '$age years',
+            onTap: () async {
+              final result = await showNumberInputDialog(
+                context: context,
+                title: 'Your Age',
+                initialValue: age,
+                min: 1,
+                max: 120,
+              );
+
+              if (result != null) {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setInt('age', result);
+                setState(() => age = result);
+              }
+            },
           ),
+
           _settingsTile(
             icon: Icons.monitor_weight,
             title: 'Weight',
-            subtitle: 'Edit your weight',
+            subtitle: '${weight.toInt()} kg',
+            onTap: () async {
+              final result = await showWeightDialog(context, weight);
+              if (result != null) {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setDouble('weight', result);
+                setState(() => weight = result);
+              }
+            },
           ),
 
           const SizedBox(height: 24),
@@ -230,38 +122,45 @@ class _SettingsPageState extends State<SettingsPage> {
             icon: Icons.trending_down,
             title: 'Minimum Sugar',
             subtitle: '${minTarget.toInt()} mg/dL',
-            onTap: () {
-              _showTargetDialog(
+            onTap: () async {
+              final result = await showTargetDialog(
+                context: context,
                 title: 'Minimum Sugar',
-                value: minTarget,
-                onChanged: (v) async {
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.setDouble('minTarget', v);
-                  setState(() => minTarget = v);
-                },
+                initialValue: minTarget,
+                min: 50,
+                max: 150,
               );
+
+              if (result != null) {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setDouble('minTarget', result);
+
+                setState(() => minTarget = result);
+              }
             },
           ),
-
 
           _settingsTile(
             icon: Icons.trending_up,
             title: 'Maximum Sugar',
             subtitle: '${maxTarget.toInt()} mg/dL',
-            onTap: () {
-              _showTargetDialog(
+            onTap: () async {
+              final result = await showTargetDialog(
+                context: context,
                 title: 'Maximum Sugar',
-                value: maxTarget,
-                onChanged: (v) async {
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.setDouble('maxTarget', v);
-                  setState(() => maxTarget = v);
-                },
+                initialValue: maxTarget,
+                min: 100,
+                max: 300,
               );
+
+              if (result != null) {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setDouble('maxTarget', result);
+
+                setState(() => maxTarget = result);
+              }
             },
           ),
-
-
 
           const SizedBox(height: 24),
 
@@ -269,7 +168,10 @@ class _SettingsPageState extends State<SettingsPage> {
           _settingsTile(
             icon: Icons.alarm,
             title: 'Reminder Time',
-            subtitle: 'Daily reminder',
+            subtitle: reminderTime == null
+                ? 'Not set'
+                : reminderTime!.format(context),
+            onTap: _pickReminderTime,
           ),
 
           const SizedBox(height: 24),
@@ -278,18 +180,20 @@ class _SettingsPageState extends State<SettingsPage> {
           _settingsTile(
             icon: Icons.straighten,
             title: 'Units',
-            subtitle: 'mg/dL',
-          ),
-          _settingsTile(
-            icon: Icons.dark_mode,
-            title: 'Theme',
-            subtitle: 'Light / Dark',
+            subtitle: units,
+            onTap: () async {
+              final result = await showUnitsDialog(context, units);
+              if (result != null) {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setString('units', result);
+                setState(() => units = result);
+              }
+            },
           ),
         ],
       ),
     );
   }
-
 
   Widget _sectionTitle(String title) {
     return Padding(
@@ -318,6 +222,4 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
-
-
 }
