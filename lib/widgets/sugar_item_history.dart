@@ -1,3 +1,4 @@
+import 'package:blood_sugar_app_1/core/utils/blood_level_type.dart';
 import 'package:flutter/material.dart';
 import 'package:blood_sugar_app_1/core/utils/blood_level_analyzer.dart';
 import 'package:blood_sugar_app_1/core/utils/blood_level_extension.dart';
@@ -41,7 +42,7 @@ class SugarHistoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final status = BloodLevelAnalyzer.getLevel(
+    final BloodLevelType status = BloodLevelAnalyzer.getLevel(
       value: reading.value.toDouble(),
       minTarget: minTarget,
       maxTarget: maxTarget,
