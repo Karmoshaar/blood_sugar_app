@@ -39,8 +39,8 @@ class _RemindSetupState extends ConsumerState<RemindSetup> {
           children: [
             const SizedBox(height: 28),
             const Text(
-              "When would you like to"
-              "receive health check                            "
+              "When would you like to  "
+              "   receive health check                            "
               "reminders?",
               style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,

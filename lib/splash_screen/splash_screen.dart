@@ -25,6 +25,7 @@ class _SplashMainState extends State<SplashMain> {
           children: [
             Expanded(
               child: PageView(
+                physics: NeverScrollableScrollPhysics(),
                 controller: _controller,
                 onPageChanged: (index) {
                   setState(() {
@@ -99,7 +100,7 @@ class _SplashMainState extends State<SplashMain> {
                         backgroundColor: AppColors.primary,
                       ),
                       child: Text(
-                        isLastPage ? "Let's Get Started" : "Continue",
+                        isLastPage ? "Let's Get Started" : "Next",
                         style: TextStyle(color: AppColors.textWhite, fontSize: 18),
                       ),
                     ),

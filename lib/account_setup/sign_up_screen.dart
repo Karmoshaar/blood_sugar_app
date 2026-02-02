@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:blood_sugar_app_1/account_setup/account_setup.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
+import 'package:flutter/material.dart';
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -18,10 +18,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
@@ -104,7 +100,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 40),
+            SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -127,7 +123,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 60),
+            SizedBox(height: 20),
 
             // OR continue with
             Row(
@@ -152,7 +148,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 _socialButton(Icons.close, Colors.grey),
               ],
             ),
-            SizedBox(height: 150),
+            SizedBox(
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height * 0.15,
+            )
+            ,
 
             // Sign up button
             SizedBox(

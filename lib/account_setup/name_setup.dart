@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
-import 'gender_setup.dart';
-import '../widgets/setup_progress_bar.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../widgets/setup_progress_bar.dart';
+import 'gender_setup.dart';
+
 class NameSetup extends ConsumerStatefulWidget {
   const NameSetup({super.key});
 
@@ -27,15 +29,12 @@ class _NameSetupState extends ConsumerState<NameSetup> {
 
   @override
   Widget build(BuildContext context) {
-    final userState = ref.watch(userSetupProvider);
+    // final userState = ref.watch(userSetupProvider);
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-        ),
         title: SetupProgressBar(currentPage: 1),
       ),
       body: Padding(
