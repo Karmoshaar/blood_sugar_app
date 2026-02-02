@@ -22,27 +22,27 @@ class SugarStats extends ConsumerStatefulWidget {
 class _SugarStatsState extends ConsumerState<SugarStats> {
   ChartType _selected = ChartType.bar;
 
-  double minTarget = 70;
-  double maxTarget = 140;
+  double _minTarget = 70;
+  double _maxTarget = 140;
 
   @override
   void initState() {
     super.initState();
-    loadTargets();
+    _loadTargets();
   }
 
-  Future<void> loadTargets() async {
+  Future<void> _loadTargets() async {
     final min = await SettingsStorage.getMinSugar();
     final max = await SettingsStorage.getMaxSugar();
 
     if (!mounted) return;
 
     setState(() {
-      minTarget = min.toDouble();
-      maxTarget = max.toDouble();
+      _minTarget = min.toDouble();
+      _maxTarget = max.toDouble();
     });
 
-    debugPrint("🔁 Reload Targets → min: $minTarget | max: $maxTarget");
+    debugPrint("🔁 Reload Targets → min: $_minTarget | max: $_maxTarget");
   }
 
   // --- الرسوم البيانية ---
@@ -147,7 +147,7 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
               );
 
               // 🔥 لما يرجع من Settings
-              await loadTargets();
+              await _loadTargets();
             },
           ),
         ],
@@ -227,8 +227,8 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
       case ChartType.history:
         return SugarHistoryList(
           readings: sorted,
-          minTarget: minTarget,
-          maxTarget: maxTarget,
+          minTarget: _minTarget,
+          maxTarget: _maxTarget,
         );
     }
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
+import 'splash_screen.dart';
 class SplashScreen1 extends StatefulWidget {
   const SplashScreen1({super.key});
 
@@ -13,7 +14,13 @@ class _SplashScreen1State extends State<SplashScreen1> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, '/splashMain');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const SplashMain(),
+        ),
+      );
+
     });
   }
 

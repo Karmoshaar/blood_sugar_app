@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AppDialogs {
   AppDialogs._();
 
-  static Future<T?> showBase<T>({
+  static Future<T?> _showBase<T>({
     required BuildContext context,
     required String title,
     required Widget content,
@@ -36,7 +36,7 @@ class AppDialogs {
   }) {
     final controller = TextEditingController(text: initialValue.toString());
 
-    return showBase<int>(
+    return _showBase<int>(
       context: context,
       title: title,
       content: TextField(
@@ -56,7 +56,7 @@ class AppDialogs {
   static Future<String?> units(BuildContext context, String currentUnit) {
     String selected = currentUnit;
 
-    return showBase<String>(
+    return _showBase<String>(
       context: context,
 
       title: 'Blood Sugar Units',
@@ -94,7 +94,7 @@ class AppDialogs {
   }) {
     double tempValue = initialValue;
 
-    return showBase<double>(
+    return _showBase<double>(
       context: context,
 
       title: title,
@@ -132,7 +132,7 @@ class AppDialogs {
       text: initialValue.toInt().toString(),
     );
 
-    return showBase<double>(
+    return _showBase<double>(
       context: context,
       title: 'Weight (kg)',
       content: TextField(

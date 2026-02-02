@@ -31,10 +31,10 @@ class _SugarHistoryListState extends State<SugarHistoryList> {
     minTarget = widget.minTarget;
     maxTarget = widget.maxTarget;
     // 2. استدعاء التحميل فور بدء التشغيل
-    loadTargets();
+    _loadTargets();
   }
 
-  Future<void> loadTargets() async {
+  Future<void> _loadTargets() async {
     final prefs = await SharedPreferences.getInstance();
     // 4. التأكد أن الـ Widget لا يزال موجوداً قبل setState
     if (!mounted) return;
