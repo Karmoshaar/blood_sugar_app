@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:blood_sugar_app_1/AccountSetup/account_setup.dart';
+import 'package:blood_sugar_app_1/account_setup/account_setup.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});

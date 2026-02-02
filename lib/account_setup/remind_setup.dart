@@ -1,6 +1,6 @@
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:flutter/material.dart';
-import 'package:blood_sugar_app_1/HealthData/sugar_stats.dart';
+import 'package:blood_sugar_app_1/health_data/sugar_stats.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
 import '../widgets/setup_progress_bar.dart';

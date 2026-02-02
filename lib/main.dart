@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'splash_screen/splash_screen_1.dart';
 import 'splash_screen/splash_screen.dart';
-import 'AccountSetup/account_setup.dart';
+import 'account_setup/account_setup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'HealthData/sugar_stats.dart';
+import 'health_data/sugar_stats.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (_) => SplashScreen1(),
         '/splashMain': (_) => SplashMain(),
-        '/AccountSetup': (_) => AccountSetup(),
+        '/account_setup': (_) => AccountSetup(),
         '/SugarStats': (_) => SugarStats(),
       },
     );

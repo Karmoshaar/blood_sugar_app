@@ -1,10 +1,7 @@
+import 'package:blood_sugar_app_1/core/ui/app_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../helpers/settings_dialogs.dart';
-import '../helpers/target_dialog.dart';
-import '../helpers/number_input_dialog.dart';
-import '../helpers/weight_dialog.dart';
-import '../helpers/units_dialog.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -85,10 +82,10 @@ class _SettingsPageState extends State<SettingsPage> {
             title: 'Age',
             subtitle: '$age years',
             onTap: () async {
-              final result = await showNumberInputDialog(
+              final result = await AppDialogs.numberInput(
                 context: context,
-                title: 'Your Age',
-                initialValue: age,
+                title: "Age",
+                initialValue: 25,
                 min: 1,
                 max: 120,
               );
@@ -106,7 +103,7 @@ class _SettingsPageState extends State<SettingsPage> {
             title: 'Weight',
             subtitle: '${weight.toInt()} kg',
             onTap: () async {
-              final result = await showWeightDialog(context, weight);
+              final result = await AppDialogs.weight(context, weight);
               if (result != null) {
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.setDouble('weight', result);
@@ -123,7 +120,7 @@ class _SettingsPageState extends State<SettingsPage> {
             title: 'Minimum Sugar',
             subtitle: '${minTarget.toInt()} mg/dL',
             onTap: () async {
-              final result = await showTargetDialog(
+              final result = await AppDialogs.target(
                 context: context,
                 title: 'Minimum Sugar',
                 initialValue: minTarget,
@@ -145,7 +142,7 @@ class _SettingsPageState extends State<SettingsPage> {
             title: 'Maximum Sugar',
             subtitle: '${maxTarget.toInt()} mg/dL',
             onTap: () async {
-              final result = await showTargetDialog(
+              final result = await AppDialogs.target(
                 context: context,
                 title: 'Maximum Sugar',
                 initialValue: maxTarget,
@@ -182,7 +179,7 @@ class _SettingsPageState extends State<SettingsPage> {
             title: 'Units',
             subtitle: units,
             onTap: () async {
-              final result = await showUnitsDialog(context, units);
+              final result = await AppDialogs.units(context, units);
               if (result != null) {
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.setString('units', result);

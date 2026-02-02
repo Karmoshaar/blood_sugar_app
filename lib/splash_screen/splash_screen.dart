@@ -3,8 +3,8 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'splash_screen_2.dart';
 import 'splash_screen_3.dart';
 import 'splash_screen_4.dart';
-import 'package:blood_sugar_app_1/AccountSetup/sign_up_screen.dart';
-import 'package:blood_sugar_app_1/AccountSetup/account_setup.dart';
+import 'package:blood_sugar_app_1/account_setup/sign_up_screen.dart';
+import 'package:blood_sugar_app_1/account_setup/account_setup.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 class SplashMain extends StatefulWidget {
   const SplashMain({super.key});
