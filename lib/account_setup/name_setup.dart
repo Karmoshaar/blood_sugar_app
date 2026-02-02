@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Gender_Setup.dart';
+import 'gender_setup.dart';
 import '../widgets/setup_progress_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';

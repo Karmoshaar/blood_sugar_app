@@ -7,14 +7,14 @@ import '../widgets/setup_progress_bar.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 import 'package:blood_sugar_app_1/core/providers/auth_provider.dart';
 
-class remindSetup extends ConsumerStatefulWidget {
-  const remindSetup({super.key});
+class RemindSetup extends ConsumerStatefulWidget {
+  const RemindSetup({super.key});
 
   @override
-  ConsumerState<remindSetup> createState() => _remindSetupState();
+  ConsumerState<RemindSetup> createState() => _RemindSetupState();
 }
 
-class _remindSetupState extends ConsumerState<remindSetup> {
+class _RemindSetupState extends ConsumerState<RemindSetup> {
   bool _isLoading = false;
   DateTime _selectedTime = DateTime.now();
 

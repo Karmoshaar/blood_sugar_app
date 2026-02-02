@@ -52,7 +52,7 @@ class SugarHistoryItem extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: status.color.withOpacity(0.1),
+        color: status.color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(

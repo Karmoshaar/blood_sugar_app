@@ -10,7 +10,7 @@ import 'package:blood_sugar_app_1/widgets/sugar_history_list.dart';
 import 'package:blood_sugar_app_1/settings/settings_page.dart';
 import 'package:blood_sugar_app_1/settings/settings_storage.dart';
 
-enum ChartType { bar, line, history }
+enum _ChartType { bar, line, history }
 
 class SugarStats extends ConsumerStatefulWidget {
   const SugarStats({super.key});
@@ -20,7 +20,7 @@ class SugarStats extends ConsumerStatefulWidget {
 }
 
 class _SugarStatsState extends ConsumerState<SugarStats> {
-  ChartType _selected = ChartType.bar;
+  _ChartType _selected = _ChartType.bar;
 
   double _minTarget = 70;
   double _maxTarget = 140;
@@ -110,7 +110,7 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
               show: true,
               gradient: LinearGradient(
                 colors: [
-                  AppColors.primaryLight.withOpacity(0.3),
+                  AppColors.primaryLight.withValues(alpha: 0.3),
                   Colors.transparent,
                 ],
                 begin: Alignment.topCenter,
@@ -164,17 +164,17 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
                   child: _buildMainToggleButton(
                     "Statistics",
                     isActive:
-                        _selected == ChartType.bar ||
-                        _selected == ChartType.line,
-                    onTap: () => setState(() => _selected = ChartType.bar),
+                        _selected == _ChartType.bar ||
+                        _selected == _ChartType.line,
+                    onTap: () => setState(() => _selected = _ChartType.bar),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildMainToggleButton(
                     "History",
-                    isActive: _selected == ChartType.history,
-                    onTap: () => setState(() => _selected = ChartType.history),
+                    isActive: _selected == _ChartType.history,
+                    onTap: () => setState(() => _selected = _ChartType.history),
                   ),
                 ),
               ],
@@ -220,11 +220,11 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
     List<SugarReading> sorted,
   ) {
     switch (_selected) {
-      case ChartType.bar:
+      case _ChartType.bar:
         return _buildBarChart(calculator);
-      case ChartType.line:
+      case _ChartType.line:
         return _buildLineChart(calculator);
-      case ChartType.history:
+      case _ChartType.history:
         return SugarHistoryList(
           readings: sorted,
           minTarget: _minTarget,
@@ -272,9 +272,9 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
 
         Row(
           children: [
-            _chartTypeIcon(Icons.bar_chart, ChartType.bar),
+            _chartTypeIcon(Icons.bar_chart, _ChartType.bar),
             const SizedBox(width: 8),
-            _chartTypeIcon(Icons.show_chart, ChartType.line),
+            _chartTypeIcon(Icons.show_chart, _ChartType.line),
           ],
         ),
       ],
@@ -362,7 +362,7 @@ class _SugarStatsState extends ConsumerState<SugarStats> {
     );
   }
 
-  Widget _chartTypeIcon(IconData icon, ChartType type) {
+  Widget _chartTypeIcon(IconData icon, _ChartType type) {
     return GestureDetector(
       onTap: () => setState(() => _selected = type),
       child: Container(

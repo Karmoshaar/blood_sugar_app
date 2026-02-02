@@ -62,10 +62,10 @@ class AppColors {
   static Color disabled = Colors.grey.shade400;
 
   /// ظل خفيف
-  static Color shadow = Colors.black.withOpacity(0.1);
+  static Color shadow = Colors.black.withValues(alpha: 0.1);
 
   /// ظل للـ Primary
-  static Color primaryShadow = primary.withOpacity(0.3);
+  static Color primaryShadow = primary.withValues(alpha: 0.3);
 
   // ========== Gradients ==========
 

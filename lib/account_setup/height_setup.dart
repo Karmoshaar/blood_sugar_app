@@ -78,7 +78,7 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const remindSetup()),
+      MaterialPageRoute(builder: (_) => const RemindSetup()),
     );
   }
 

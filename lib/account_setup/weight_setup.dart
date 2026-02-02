@@ -191,11 +191,11 @@ class _WeightSetupState extends ConsumerState<WeightSetup> {
           decoration: BoxDecoration(
             border: Border(
               top: BorderSide(
-                color: AppColors.primaryLight.withOpacity(0.5),
+                color: AppColors.primaryLight.withValues(alpha: 0.5),
                 width: 2,
               ),
               bottom: BorderSide(
-                color: AppColors.primaryLight.withOpacity(0.5),
+                color: AppColors.primaryLight.withValues(alpha: 0.5),
                 width: 2,
               ),
             ),

@@ -32,7 +32,7 @@ class _DateSetupState extends ConsumerState<DateSetup> {
 
   @override
   Widget build(BuildContext context) {
-    final userState = ref.watch(userSetupProvider);
+    // final userState = ref.watch(userSetupProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.background,
