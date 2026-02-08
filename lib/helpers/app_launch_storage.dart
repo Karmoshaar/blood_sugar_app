@@ -1,15 +1,20 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppLaunchStorage {
-  static const _key = 'has_reached_name_setup';
+  static const _stepKey = 'setup_step';
 
-  static Future<bool> hasReachedNameSetup() async {
+  static Future<void> setSetupStep(int step) async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_key) ?? false;
+    await prefs.setInt(_stepKey, step);
   }
 
-  static Future<void> setReachedNameSetup() async {
+  static Future<int> getSetupStep() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_key, true);
+    return prefs.getInt(_stepKey) ?? 1;
+  }
+
+  static Future<void> clearSetupStep() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_stepKey);
   }
 }

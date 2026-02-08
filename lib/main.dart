@@ -1,30 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'account_setup/name_setup.dart';
 import 'helpers/app_launch_storage.dart';
-import 'splash_screen/splash_screen_1.dart';
+import 'helpers/setup_flow_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final reachedNAme = await AppLaunchStorage.hasReachedNameSetup();
-  runApp(ProviderScope(child: MyApp(reachedName: reachedNAme)));
+  final step = await AppLaunchStorage.getSetupStep();
+  print("APP START STEP = $step");
+  runApp(ProviderScope(child: MyApp(step: step)));
 }
 
 class MyApp extends StatelessWidget {
-  final bool reachedName;
+  final int step;
 
   const MyApp({super.key,
-    required this.reachedName,
+    required this.step,
   });
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: reachedName
-          ? const NameSetup()
-          : const SplashScreen1(),
       debugShowCheckedModeBanner: false,
+      home: SetupFlowController(step: step),
       theme: ThemeData(
         useMaterial3: true,
       ),

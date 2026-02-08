@@ -46,7 +46,6 @@ class _AccountSetupState extends ConsumerState<AccountSetup> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () async {
-                      await AppLaunchStorage.setReachedNameSetup();
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (_) => const NameSetup()),

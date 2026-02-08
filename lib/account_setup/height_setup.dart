@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
+import '../helpers/app_launch_storage.dart';
 import 'remind_setup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
 import '../widgets/setup_progress_bar.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
+
 class HeightSetup extends ConsumerStatefulWidget {
   const HeightSetup({super.key});
 
@@ -24,6 +26,7 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    // Removed AppLaunchStorage.setSetupStep(5) from here
 
     if (!_initialized) {
       _loadSavedData();
@@ -48,7 +51,6 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
   }
 
   void _updateFeetInches() {
-    // التحقق من صحة القيمة
     if (_cm < 100 || _cm > 220) {
       _cm = 170;
     }
@@ -57,7 +59,6 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
     _feet = totalInches ~/ 12;
     _inches = totalInches % 12;
 
-    // تأكد من القيم ضمن النطاق
     if (_feet < 3) _feet = 3;
     if (_feet > 7) _feet = 7;
     if (_inches < 0) _inches = 0;
@@ -68,18 +69,22 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
     final totalInches = _feet * 12 + _inches;
     _cm = (totalInches / _cmToInchFactor).round();
 
-    // تأكد من القيمة ضمن النطاق
     if (_cm < 100) _cm = 100;
     if (_cm > 220) _cm = 220;
   }
 
-  void _saveAndContinue() {
+  void _saveAndContinue() async {
     ref.read(userSetupProvider.notifier).setHeight(_cm.toDouble());
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const RemindSetup()),
-    );
+    // Save Step 6 ONLY when moving forward to RemindSetup
+    await AppLaunchStorage.setSetupStep(6);
+
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const RemindSetup()),
+      );
+    }
   }
 
   Widget _unitButton(String label, bool active, VoidCallback onTap) {
@@ -89,19 +94,19 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         decoration: BoxDecoration(
-          color: active ?  AppColors.primaryDark : Colors.transparent,
+          color: active ? AppColors.primaryDark : Colors.transparent,
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
             color: active ? Colors.transparent : AppColors.disabled,
           ),
           boxShadow: active
               ? [
-            BoxShadow(
-              color: Colors.red.shade200,
-              offset: const Offset(0, 4),
-              blurRadius: 8,
-            ),
-          ]
+                  BoxShadow(
+                    color: Colors.red.shade200,
+                    offset: const Offset(0, 4),
+                    blurRadius: 8,
+                  ),
+                ]
               : [],
         ),
         child: Text(
@@ -124,10 +129,12 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
         titleSpacing: 0,
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-        ),
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                onPressed: () => Navigator.maybePop(context),
+                icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+              )
+            : null,
         title: const SetupProgressBar(currentPage: 5),
       ),
       body: Padding(
@@ -141,8 +148,6 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-
-            // اختيار الوحدة
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -150,7 +155,6 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
                   if (!_isCm) {
                     setState(() {
                       _isCm = true;
-                      // لا حاجة لتحديث شي، _cm موجود
                     });
                   }
                 }),
@@ -165,10 +169,7 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
                 }),
               ],
             ),
-
             const SizedBox(height: 20),
-
-            // Number Picker
             if (_isCm)
               SizedBox(
                 height: 250,
@@ -252,10 +253,7 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
                   ],
                 ),
               ),
-
             const SizedBox(height: 20),
-
-            // عرض القيمة
             Stack(
               alignment: Alignment.center,
               children: [
@@ -280,10 +278,7 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
                 ),
               ],
             ),
-
             const Spacer(),
-
-            // زر المتابعة
             ElevatedButton(
               onPressed: _saveAndContinue,
               style: ElevatedButton.styleFrom(
@@ -300,7 +295,7 @@ class _HeightSetupState extends ConsumerState<HeightSetup> {
               ),
               child: const Text(
                 "Continue",
-                style:  TextStyle(color: AppColors.textWhite, fontSize: 18),
+                style: TextStyle(color: AppColors.textWhite, fontSize: 18),
               ),
             ),
             const SizedBox(height: 30),

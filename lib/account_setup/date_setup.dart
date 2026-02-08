@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:dss_cupertino_date_picker/dss_cupertino_date_picker.dart';
+import '../helpers/app_launch_storage.dart';
 import 'weight_setup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
 import '../widgets/setup_progress_bar.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
+
 class DateSetup extends ConsumerStatefulWidget {
   const DateSetup({super.key});
 
@@ -20,7 +22,8 @@ class _DateSetupState extends ConsumerState<DateSetup> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback ((_) {
+    // Removed AppLaunchStorage.setSetupStep(3) from here
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = ref.read(userSetupProvider);
       if (state.birthDate != null) {
         setState(() {
@@ -32,15 +35,16 @@ class _DateSetupState extends ConsumerState<DateSetup> {
 
   @override
   Widget build(BuildContext context) {
-    // final userState = ref.watch(userSetupProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-        ),
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                onPressed: () => Navigator.maybePop(context),
+                icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+              )
+            : null,
         title: SetupProgressBar(currentPage: 3),
       ),
       body: Column(
@@ -89,16 +93,21 @@ class _DateSetupState extends ConsumerState<DateSetup> {
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               ref.read(userSetupProvider.notifier).setBirthDate(_selectedDate);
-              print('تم حفظ التاريخ :$_selectedDate');
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const WeightSetup()),
-              );
+
+              // Save Step 4 ONLY when user clicks Continue
+              await AppLaunchStorage.setSetupStep(4);
+
+              if (context.mounted) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const WeightSetup()),
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor:  AppColors.primary,
+              backgroundColor: AppColors.primary,
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 80),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(32),
@@ -106,7 +115,7 @@ class _DateSetupState extends ConsumerState<DateSetup> {
             ),
             child: const Text(
               "Continue",
-              style:  TextStyle(color: AppColors.textWhite, fontSize: 18),
+              style: TextStyle(color: AppColors.textWhite, fontSize: 18),
             ),
           ),
           const SizedBox(height: 30),

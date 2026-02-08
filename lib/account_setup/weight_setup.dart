@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
+import '../helpers/app_launch_storage.dart';
 import 'height_setup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
@@ -23,15 +24,14 @@ class _WeightSetupState extends ConsumerState<WeightSetup> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    // Removed AppLaunchStorage.setSetupStep(4) from here
 
-    // تنفيذ مرة واحدة فقط
     if (!_initialized) {
       _loadSavedData();
       _initialized = true;
     }
   }
 
-  /// تحميل البيانات المحفوظة من Provider
   void _loadSavedData() {
     final state = ref.read(userSetupProvider);
 
@@ -42,38 +42,33 @@ class _WeightSetupState extends ConsumerState<WeightSetup> {
     }
   }
 
-  /// حساب القيمة المعروضة حسب الوحدة
   int get _displayValue => _isKg ? _kg : (_kg * _kgToLbFactor).round();
-
-  /// الحد الأدنى للقيمة حسب الوحدة
   int get _minValue => _isKg ? 30 : (30 * _kgToLbFactor).round();
-
-  /// الحد الأقصى للقيمة حسب الوحدة
   int get _maxValue => _isKg ? 200 : (200 * _kgToLbFactor).round();
 
-  /// معالج تغيير القيمة
   void _onValueChanged(int value) {
     setState(() {
       if (_isKg) {
         _kg = value;
       } else {
-        // تحويل من lb إلى kg
         _kg = (value / _kgToLbFactor).round();
-
-        // التحقق من النطاق
         _kg = _kg.clamp(30, 200);
       }
     });
   }
 
-  /// حفظ البيانات والانتقال للصفحة التالية
-  void _saveAndContinue() {
+  void _saveAndContinue() async {
     ref.read(userSetupProvider.notifier).setWeight(_kg.toDouble());
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const HeightSetup()),
-    );
+    // Save Step 5 ONLY when moving forward
+    await AppLaunchStorage.setSetupStep(5);
+
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const HeightSetup()),
+      );
+    }
   }
 
   @override
@@ -84,10 +79,12 @@ class _WeightSetupState extends ConsumerState<WeightSetup> {
         titleSpacing: 0,
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-        ),
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                onPressed: () => Navigator.maybePop(context),
+                icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+              )
+            : null,
         title: const SetupProgressBar(currentPage: 4),
       ),
       body: Padding(
@@ -109,7 +106,6 @@ class _WeightSetupState extends ConsumerState<WeightSetup> {
     );
   }
 
-  /// بناء العنوان
   Widget _buildTitle() {
     return const Text(
       "What's your body weight?",
@@ -118,27 +114,17 @@ class _WeightSetupState extends ConsumerState<WeightSetup> {
     );
   }
 
-  /// بناء محدد الوحدة
   Widget _buildUnitSelector() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _unitButton(
-          'kg',
-          _isKg,
-              () => setState(() => _isKg = true),
-        ),
+        _unitButton('kg', _isKg, () => setState(() => _isKg = true)),
         const SizedBox(width: 12),
-        _unitButton(
-          'lb',
-          !_isKg,
-              () => setState(() => _isKg = false),
-        ),
+        _unitButton('lb', !_isKg, () => setState(() => _isKg = false)),
       ],
     );
   }
 
-  /// بناء Number Picker
   Widget _buildWeightPicker() {
     return Expanded(
       child: AnimatedSwitcher(
@@ -182,7 +168,6 @@ class _WeightSetupState extends ConsumerState<WeightSetup> {
     );
   }
 
-  /// بناء مؤشر التحديد
   Widget _buildSelectionIndicator() {
     return IgnorePointer(
       child: Center(
@@ -205,7 +190,6 @@ class _WeightSetupState extends ConsumerState<WeightSetup> {
     );
   }
 
-  /// بناء زر المتابعة
   Widget _buildContinueButton() {
     return ElevatedButton(
       onPressed: _saveAndContinue,
@@ -227,7 +211,6 @@ class _WeightSetupState extends ConsumerState<WeightSetup> {
     );
   }
 
-  /// بناء زر الوحدة
   Widget _unitButton(String label, bool active, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,

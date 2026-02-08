@@ -3,6 +3,7 @@ import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../helpers/app_launch_storage.dart';
 import '../widgets/setup_progress_bar.dart';
 import 'gender_setup.dart';
 
@@ -19,6 +20,7 @@ class _NameSetupState extends ConsumerState<NameSetup> {
   @override
   void initState() {
     super.initState();
+    // Removed AppLaunchStorage.setSetupStep(1) from here to prevent automatic increment/re-save
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = ref.read(userSetupProvider);
       if (state.name != null) {
@@ -29,10 +31,16 @@ class _NameSetupState extends ConsumerState<NameSetup> {
 
   @override
   Widget build(BuildContext context) {
-    // final userState = ref.watch(userSetupProvider);
     return Scaffold(
       appBar: AppBar(
+        // Safety: Disable back button if this is the root setup screen to avoid black screen
         automaticallyImplyLeading: false,
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                onPressed: () => Navigator.maybePop(context),
+                icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+              )
+            : null,
         backgroundColor: AppColors.background,
         elevation: 0,
         title: SetupProgressBar(currentPage: 1),
@@ -62,24 +70,25 @@ class _NameSetupState extends ConsumerState<NameSetup> {
             ),
             const Spacer(),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (_nameController.text.isNotEmpty) {
-                  // حفظ الاسم في Provider
                   ref
                       .read(userSetupProvider.notifier)
                       .setName(_nameController.text);
 
-                  // طباعة للتأكد (اختياري - للتجربة)
-                  print('✅ تم حفظ الاسم: ${_nameController.text}');
+                  // Save the next step (2) ONLY when the user successfully clicks Continue
+                  await AppLaunchStorage.setSetupStep(2);
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const GenderSetup()),
-                  );
+                  if (context.mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const GenderSetup()),
+                    );
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor:  AppColors.primary,
+                backgroundColor: AppColors.primary,
                 padding: const EdgeInsets.symmetric(
                   vertical: 16,
                   horizontal: 80,
@@ -90,7 +99,7 @@ class _NameSetupState extends ConsumerState<NameSetup> {
               ),
               child: const Text(
                 "Continue",
-                style:  TextStyle(color: AppColors.textWhite, fontSize: 18),
+                style: TextStyle(color: AppColors.textWhite, fontSize: 18),
               ),
             ),
             const SizedBox(height: 30),

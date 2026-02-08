@@ -1,11 +1,13 @@
-import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
-import 'package:flutter/material.dart';
-import 'package:blood_sugar_app_1/health_data/sugar_stats.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
-import '../widgets/setup_progress_bar.dart';
-import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 import 'package:blood_sugar_app_1/core/providers/auth_provider.dart';
+import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
+import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
+import 'package:blood_sugar_app_1/health_data/sugar_stats.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
+
+import '../helpers/app_launch_storage.dart';
+import '../widgets/setup_progress_bar.dart';
 
 class RemindSetup extends ConsumerStatefulWidget {
   const RemindSetup({super.key});
@@ -20,17 +22,21 @@ class _RemindSetupState extends ConsumerState<RemindSetup> {
 
   @override
   Widget build(BuildContext context) {
-    final userState = ref.watch(userSetupProvider);
+    // تعديل: تم حذف setSetupStep من هنا لمنع زيادة رقم الخطوة تلقائياً عند إعادة بناء الشاشة (Rebuild)
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         titleSpacing: 0,
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-        ),
+        // تعديل: إضافة فحص Navigator.canPop لمنع ظهور زر الرجوع إذا كانت هذه الشاشة هي الرئيسية (تجنباً للشاشة السوداء)
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                // تعديل: استخدام maybePop لضمان عدم الخروج من التطبيق إلى شاشة فارغة
+                onPressed: () => Navigator.maybePop(context),
+                icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+              )
+            : null,
         title: SetupProgressBar(currentPage: 6),
       ),
       body: Padding(
@@ -39,14 +45,11 @@ class _RemindSetupState extends ConsumerState<RemindSetup> {
           children: [
             const SizedBox(height: 28),
             const Text(
-              "When would you like to  "
-              "   receive health check                            "
-              "reminders?",
+              "When would you like to receive health check reminders?",
               style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 100),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -67,54 +70,42 @@ class _RemindSetupState extends ConsumerState<RemindSetup> {
                   isForce2Digits: true,
                   onTimeChange: (time) {
                     _selectedTime = time;
-                    // Handle time change if needed
                   },
                 ),
               ],
             ),
-
             const SizedBox(height: 20),
-
             const Spacer(),
-
             ElevatedButton(
               onPressed: _isLoading
                   ? null
                   : () async {
-                      // بداية التحميل
                       setState(() {
                         _isLoading = true;
                       });
 
                       try {
-                        // حفظ وقت التذكير
                         ref
                             .read(userSetupProvider.notifier)
                             .setReminderTime(_selectedTime);
 
-                        print('🚀 جاري إرسال البيانات...');
-                        print('⏰ وقت التذكير: $_selectedTime');
-
-                        // إرسال البيانات
                         final userSetup = ref.read(userSetupProvider);
 
                         await ref.read(authProvider.notifier).setupAccount(
-                          name: userSetup.name!,
-                          gender: userSetup.gender!,
-                          birthDate: userSetup.birthDate!,
-                          weight: userSetup.weight!,
-                          height: userSetup.height!,
-                        );
+                              name: userSetup.name!,
+                              gender: userSetup.gender!,
+                              birthDate: userSetup.birthDate!,
+                              weight: userSetup.weight!,
+                              height: userSetup.height!,
+                            );
 
+                        // تعديل: حفظ القيمة (0) فقط عند إتمام الإعداد بنجاح للإشارة إلى انتهاء مرحلة الـ Setup
+                        await AppLaunchStorage.setSetupStep(0);
 
-                        print('✅ تم إرسال البيانات بنجاح!');
-
-                        // إيقاف التحميل
                         setState(() {
                           _isLoading = false;
                         });
 
-                        // الانتقال للصفحة التالية
                         if (mounted) {
                           Navigator.pushReplacement(
                             context,
@@ -124,23 +115,19 @@ class _RemindSetupState extends ConsumerState<RemindSetup> {
                           );
                         }
                       } catch (e) {
-                        // إيقاف التحميل
                         setState(() {
                           _isLoading = false;
                         });
 
-                        // إظهار رسالة الخطأ
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('فشل في إرسال البيانات: $e'),
+                              content: Text('Failed to send data: $e'),
                               backgroundColor: Colors.red,
                               duration: const Duration(seconds: 3),
                             ),
                           );
                         }
-
-                        print('❌ خطأ في إرسال البيانات: $e');
                       }
                     },
               style: ElevatedButton.styleFrom(

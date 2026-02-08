@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../helpers/app_launch_storage.dart';
 import 'date_setup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
 import '../widgets/setup_progress_bar.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
+
 class GenderSetup extends ConsumerStatefulWidget {
   const GenderSetup({super.key});
 
@@ -18,6 +20,7 @@ class _GenderSetupState extends ConsumerState<GenderSetup> {
   @override
   void initState() {
     super.initState();
+    // Removed AppLaunchStorage.setSetupStep(2) from here
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = ref.read(userSetupProvider);
       if (state.gender != null) {
@@ -30,16 +33,17 @@ class _GenderSetupState extends ConsumerState<GenderSetup> {
 
   @override
   Widget build(BuildContext context) {
-    final userState = ref.watch(userSetupProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-        ),
-        title:  SetupProgressBar(currentPage: 2),
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                onPressed: () => Navigator.maybePop(context),
+                icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+              )
+            : null,
+        title: SetupProgressBar(currentPage: 2),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -70,17 +74,20 @@ class _GenderSetupState extends ConsumerState<GenderSetup> {
             const Spacer(flex: 3),
             ElevatedButton(
               onPressed: selectedGender != null
-                  ? () {
+                  ? () async {
                       ref
                           .read(userSetupProvider.notifier)
                           .setGender(selectedGender!);
 
-                      print('✅ تم حفظ الجنس: $selectedGender');
+                      // Save Step 3 ONLY when moving forward
+                      await AppLaunchStorage.setSetupStep(3);
 
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const DateSetup()),
-                      );
+                      if (context.mounted) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const DateSetup()),
+                        );
+                      }
                     }
                   : null,
               style: ElevatedButton.styleFrom(
@@ -96,7 +103,7 @@ class _GenderSetupState extends ConsumerState<GenderSetup> {
               ),
               child: const Text(
                 "Continue",
-                style:  TextStyle(color: AppColors.textWhite, fontSize: 18),
+                style: TextStyle(color: AppColors.textWhite, fontSize: 18),
               ),
             ),
             const SizedBox(height: 30),
@@ -117,9 +124,7 @@ class _GenderSetupState extends ConsumerState<GenderSetup> {
         duration: const Duration(milliseconds: 200),
         child: CircleAvatar(
           radius: 60,
-          backgroundColor: isSelected
-              ?  AppColors.primary
-              : Colors.grey[300],
+          backgroundColor: isSelected ? AppColors.primary : Colors.grey[300],
           child: FaIcon(icon, color: Colors.white, size: 40),
         ),
       ),
