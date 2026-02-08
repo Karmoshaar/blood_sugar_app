@@ -3,7 +3,6 @@ import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
-
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
 }
@@ -55,6 +54,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   icon: Icon(
                     _obsureText ? Icons.visibility : Icons.visibility_off,
                   ),
+
                   onPressed: () {
                     setState(() {
                       _obsureText = !_obsureText;
@@ -83,7 +83,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   },
                 ),
                 Expanded(
-                  child: RichText(
+
+                child: RichText(
                     text: TextSpan(
                       text: "I agree to Pulsey ",
                       style: TextStyle(color: AppColors.textPrimary),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'name_setup.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blood_sugar_app_1/helpers/app_launch_storage.dart';
 class AccountSetup extends ConsumerStatefulWidget {
   const AccountSetup({super.key});
   @override
@@ -44,8 +45,9 @@ class _AccountSetupState extends ConsumerState<AccountSetup> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
+                    onPressed: () async {
+                      await AppLaunchStorage.setReachedNameSetup();
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (_) => const NameSetup()),
                       );
