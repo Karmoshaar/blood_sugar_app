@@ -1,6 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
+import 'package:blood_sugar_app_1/helpers/notification_service.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+
 import 'splash_screen.dart';
 class SplashScreen1 extends StatefulWidget {
   const SplashScreen1({super.key});
@@ -11,8 +14,9 @@ class SplashScreen1 extends StatefulWidget {
 
 class _SplashScreen1State extends State<SplashScreen1> {
   @override
-  void initState() {
+   initState() {
     super.initState();
+    _requestPermission();
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
@@ -20,7 +24,6 @@ class _SplashScreen1State extends State<SplashScreen1> {
           builder: (_) => const SplashMain(),
         ),
       );
-
     });
   }
 
@@ -49,4 +52,10 @@ class _SplashScreen1State extends State<SplashScreen1> {
       ),
     );
   }
+}
+Future <void>_requestPermission() async{
+await flutterLocalNotificationsPlugin
+    .resolvePlatformSpecificImplementation<
+    AndroidFlutterLocalNotificationsPlugin>()
+    ?.requestNotificationsPermission();
 }
