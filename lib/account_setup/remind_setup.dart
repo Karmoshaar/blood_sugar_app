@@ -2,7 +2,9 @@ import 'package:blood_sugar_app_1/core/providers/auth_provider.dart';
 import 'package:blood_sugar_app_1/core/providers/user_setup_provider/userـsetupـnotifier.dart';
 import 'package:blood_sugar_app_1/core/theme/app_colors.dart';
 import 'package:blood_sugar_app_1/health_data/sugar_stats.dart';
+import 'package:blood_sugar_app_1/helpers/notification_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 
@@ -101,7 +103,24 @@ class _RemindSetupState extends ConsumerState<RemindSetup> {
 
                         // تعديل: حفظ القيمة (0) فقط عند إتمام الإعداد بنجاح للإشارة إلى انتهاء مرحلة الـ Setup
                         await AppLaunchStorage.setSetupStep(0);
-
+                        await flutterLocalNotificationsPlugin.zonedSchedule(
+                          androidScheduleMode: AndroidScheduleMode
+                              .exactAllowWhileIdle,
+                          matchDateTimeComponents: DateTimeComponents.time,
+                          uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation
+                              .absoluteTime,
+                          0,
+                          'Blood Sugar Reminder',
+                          'Time to check your blood sugar!',
+                          nextInstanceOfTime(_selectedTime),
+                          const NotificationDetails(
+                            android: AndroidNotificationDetails(
+                              'reminder_channel',
+                              'Daily Reminder',
+                            ),
+                            iOS: DarwinNotificationDetails(),
+                          ),
+                        );
                         setState(() {
                           _isLoading = false;
                         });
