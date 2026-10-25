@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../settings/domain/app_settings.dart';
 import '../../../settings/presentation/providers/settings_controller.dart';
 import '../../../settings/presentation/screens/settings_screen.dart';
 import '../../domain/reading_stats.dart';
@@ -26,6 +27,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final readingsAsync = ref.watch(readingsProvider);
+    final settings = ref.watch(settingsProvider);
     final stats = ReadingStats(readingsAsync.value ?? const []);
 
     return Scaffold(
@@ -47,7 +49,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       ),
       body: Column(
         children: [
-          SummaryCard(stats: stats),
+          SummaryCard(stats: stats, unit: settings.unit),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -82,7 +84,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      _header(),
+                      _header(settings.unit),
                       const SizedBox(height: 24),
                       Expanded(
                         child: readingsAsync.when(
@@ -93,7 +95,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           ),
                           data: (_) => stats.isEmpty
                               ? const Center(child: Text('No data available'))
-                              : _content(stats),
+                              : _content(stats, settings),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -109,20 +111,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  Widget _content(ReadingStats stats) {
-    switch (_selected) {
-      case _View.bar:
-        return ReadingsBarChart(readings: stats.last7);
-      case _View.line:
-        return ReadingsLineChart(readings: stats.sortedByTime);
-      case _View.history:
-        final settings = ref.watch(settingsProvider);
-        return ReadingHistoryList(
-          readings: stats.sortedByTime,
-          minTarget: settings.minTarget,
-          maxTarget: settings.maxTarget,
-        );
-    }
+  Widget _content(ReadingStats stats, AppSettings settings) {
+    return switch (_selected) {
+      _View.bar => ReadingsBarChart(readings: stats.last7, settings: settings),
+      _View.line => ReadingsLineChart(
+        readings: stats.sortedByTime,
+        settings: settings,
+      ),
+      _View.history => ReadingHistoryList(
+        readings: stats.sortedByTime,
+        settings: settings,
+      ),
+    };
   }
 
   Widget _toggleButton(
@@ -152,12 +152,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           );
   }
 
-  Widget _header() {
+  Widget _header(GlucoseUnit unit) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
-          'Blood sugar (mg/dL)',
+        Text(
+          'Blood sugar (${unit.label})',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         Row(

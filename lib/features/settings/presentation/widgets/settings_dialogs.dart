@@ -113,12 +113,14 @@ class SettingsDialogs {
     );
   }
 
+  /// Picks a target in mg/dL, displayed in [unit].
   static Future<int?> target({
     required BuildContext context,
     required String title,
     required int initialValue,
     required int min,
     required int max,
+    required GlucoseUnit unit,
   }) {
     var tempValue = initialValue.clamp(min, max).toDouble();
 
@@ -131,7 +133,7 @@ class SettingsDialogs {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                '${tempValue.toInt()} mg/dL',
+                '${unit.format(tempValue)} ${unit.label}',
                 style: const TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,

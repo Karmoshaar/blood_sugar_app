@@ -3,7 +3,7 @@ import 'package:blood_sugar_app_1/features/readings/domain/sugar_reading.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 SugarReading reading(int value, int day) =>
-    SugarReading(value: value, time: DateTime(2026, 1, day));
+    SugarReading.create(value: value, time: DateTime(2026, 1, day));
 
 void main() {
   test('empty readings give zeroed stats', () {

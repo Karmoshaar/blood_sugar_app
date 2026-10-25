@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../../settings/domain/app_settings.dart';
 import '../../domain/reading_stats.dart';
 
 class SummaryCard extends StatelessWidget {
-  const SummaryCard({super.key, required this.stats});
+  const SummaryCard({super.key, required this.stats, required this.unit});
 
   final ReadingStats stats;
+  final GlucoseUnit unit;
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +38,9 @@ class SummaryCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _stat(stats.average.toStringAsFixed(1), 'Average'),
-                    _stat(stats.maxValue.toString(), 'Max'),
-                    _stat(stats.minValue.toString(), 'Min'),
+                    _stat(unit.format(stats.average), 'Average'),
+                    _stat(unit.format(stats.maxValue), 'Max'),
+                    _stat(unit.format(stats.minValue), 'Min'),
                   ],
                 ),
               ],

@@ -105,7 +105,8 @@ class SettingsScreen extends ConsumerWidget {
           _settingsTile(
             icon: Icons.trending_down,
             title: 'Minimum Sugar',
-            subtitle: '${settings.minTarget} mg/dL',
+            subtitle:
+                '${settings.unit.format(settings.minTarget)} ${settings.unit.label}',
             onTap: () async {
               final result = await SettingsDialogs.target(
                 context: context,
@@ -114,6 +115,7 @@ class SettingsScreen extends ConsumerWidget {
                 min: 50,
                 // Keep the range valid: min must stay below max.
                 max: settings.maxTarget - 1,
+                unit: settings.unit,
               );
               if (result != null) await settingsController.setMinTarget(result);
             },
@@ -121,7 +123,8 @@ class SettingsScreen extends ConsumerWidget {
           _settingsTile(
             icon: Icons.trending_up,
             title: 'Maximum Sugar',
-            subtitle: '${settings.maxTarget} mg/dL',
+            subtitle:
+                '${settings.unit.format(settings.maxTarget)} ${settings.unit.label}',
             onTap: () async {
               final result = await SettingsDialogs.target(
                 context: context,
@@ -129,6 +132,7 @@ class SettingsScreen extends ConsumerWidget {
                 initialValue: settings.maxTarget,
                 min: settings.minTarget + 1,
                 max: 300,
+                unit: settings.unit,
               );
               if (result != null) await settingsController.setMaxTarget(result);
             },

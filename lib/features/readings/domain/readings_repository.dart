@@ -7,4 +7,9 @@ abstract interface class ReadingsRepository {
   Future<List<SugarReading>> fetchAll();
 
   Future<void> add(SugarReading reading);
+
+  /// Replaces the stored reading that has the same id.
+  Future<void> update(SugarReading reading);
+
+  Future<void> delete(String id);
 }

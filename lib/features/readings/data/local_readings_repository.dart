@@ -19,7 +19,20 @@ class LocalReadingsRepository implements ReadingsRepository {
   static const _key = 'readings.items';
 
   @override
-  Future<List<SugarReading>> fetchAll() async {
+  Future<List<SugarReading>> fetchAll() async => _read();
+
+  @override
+  Future<void> add(SugarReading reading) => _write([..._read(), reading]);
+
+  @override
+  Future<void> update(SugarReading reading) =>
+      _write([for (final r in _read()) r.id == reading.id ? reading : r]);
+
+  @override
+  Future<void> delete(String id) =>
+      _write(_read().where((r) => r.id != id).toList());
+
+  List<SugarReading> _read() {
     final raw = _prefs.getStringList(_key) ?? const [];
     return [
       for (final item in raw)
@@ -27,10 +40,10 @@ class LocalReadingsRepository implements ReadingsRepository {
     ];
   }
 
-  @override
-  Future<void> add(SugarReading reading) async {
-    final raw = _prefs.getStringList(_key) ?? const [];
-    await _prefs.setStringList(_key, [...raw, jsonEncode(reading.toJson())]);
+  Future<void> _write(List<SugarReading> readings) async {
+    await _prefs.setStringList(_key, [
+      for (final r in readings) jsonEncode(r.toJson()),
+    ]);
   }
 }
 
