@@ -1,33 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'helpers/app_launch_storage.dart';
-import 'helpers/notification_service.dart';
-import 'helpers/setup_flow_controller.dart';
+import 'app/app.dart';
+import 'core/notifications/notification_service.dart';
+import 'core/storage/shared_preferences_provider.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initNotifications();
-  final step = await AppLaunchStorage.getSetupStep();
-  print("APP START STEP = $step");
-  runApp(ProviderScope(child: MyApp(step: step)));
-}
 
-class MyApp extends StatelessWidget {
-  final int step;
+  final prefs = await SharedPreferences.getInstance();
+  final notifications = NotificationService(FlutterLocalNotificationsPlugin());
+  await notifications.init();
 
-  const MyApp({super.key,
-    required this.step,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SetupFlowController(step: step),
-      theme: ThemeData(
-        useMaterial3: true,
-      ),
-    );
-  }
+  runApp(
+    ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        notificationServiceProvider.overrideWithValue(notifications),
+      ],
+      child: const PulseyApp(),
+    ),
+  );
 }
